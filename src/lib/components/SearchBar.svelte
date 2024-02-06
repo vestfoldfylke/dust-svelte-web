@@ -18,7 +18,7 @@
       return [{fyrste: "hei på deg", andre: "oh oh"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}]
   }
   export let callback = (searchRes) => {
-      console.log('callback')
+      // console.log('callback')
   }
   export let previewMapper = (input) => {
       return input.map((ele) => {
@@ -126,13 +126,16 @@
       try {
           const res = await search(searchValue)
           isSearching = false
+          if (res.length === 0) throw new Error('Nada users')
           if (showPreview) {
               previewData = mapPreviewMapper(previewMapper(res)) // Hahahah
           }
           callback(res)
       } catch (error) {
           isSearching = false
-          if (error.response?.status === 404) searchError = 'Bruker ikke funnet... 😬'
+          console.log(error.toString())
+          if (error.toString() === 'Error: Nada users') searchError = `Ingen resultat funnet ved søk på "${searchValue}"... DET ER BJØRN RIIS SIN SKYLD!! 😬`
+          else if (error.response?.status === 404) searchError = 'Bruker ikke funnet... 😬'
           else if (error.response?.status === 401) searchError = 'Du har ikke lov å søke på det 🚫'
           else searchError = "En feil har oppstått - vennligst prøv igjen"
       }
@@ -188,9 +191,20 @@
           <div class="previewItem error">{searchError}</div>
       {:else}
           {#each previewData as pv}
-              <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" on:click={pv.onClick}>
-                  <div class="previewItemProp">{pv.first || '???'}</div><div class="previewItemProp">{pv.second || ''}</div><div class="previewItemProp">{pv.third || ''}</div>
-              </div>
+            <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" on:click={pv.onClick}>
+                <div class="previewItemProp">
+                    {#if pv.firstImage}
+                        <img src={pv.firstImage} width="18px" alt="hahah" />
+                    {/if}
+                    {pv.first || '???'}
+                </div>
+                <div class="previewItemProp">
+                    {pv.second || ''}
+                </div>
+                <div class="previewItemProp">
+                    {pv.third || ''}
+                </div>
+            </div>
           {/each}
       {/if}
       </div>

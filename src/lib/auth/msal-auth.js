@@ -15,11 +15,12 @@ const msalConfig = {
 }
 
 /**
- * 
- * @param {boolean} [forceLogin=false] 
+ *
+ * @param {boolean} [forceLogin=false]
  * @returns { import('@azure/msal-browser').AccountInfo }
  */
 export const login = async (forceLogin = false) => {
+  if (import.meta.env.VITE_MOCK_MSAL === 'true') return { username: 'demospøkelse@domene.no', name: 'Demo Spøkelse' }
   const msalClient = get(msalClientStore) || await PublicClientApplication.createPublicClientApplication(msalConfig)
   const loginResponse = await msalClient.handleRedirectPromise()
   if (loginResponse && !forceLogin) {
@@ -38,7 +39,7 @@ export const logout = async () => {
   if (currentAccounts.length === 0) return null
   const currentAccount = currentAccounts[0]
   await msalClient.logoutRedirect({
-      account: currentAccount,
-      postLogoutRedirectUri: import.meta.env.VITE_LOGOUT_URI
+    account: currentAccount,
+    postLogoutRedirectUri: import.meta.env.VITE_LOGOUT_URI
   })
 }

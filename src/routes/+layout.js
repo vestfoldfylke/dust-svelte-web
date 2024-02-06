@@ -1,1 +1,1 @@
-export const ssr = false; // SPA, don't need ssr (server side rendering)
+export const ssr = false // SPA, don't need ssr (server side rendering)

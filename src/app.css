@@ -7,7 +7,6 @@ body {
 	margin: 0px;
 	padding: 0px;
 	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
-	color: #454545;
 	height: 100%;
 	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
 	line-height: 1.4;
@@ -23,8 +22,82 @@ body {
 	margin: 0;
 }
 
+/* VARIABLES */
+:root {
+/* COLORS */
+	--vann-10: #E5EEEF;
+	--vann-20: #CCDCDF;
+	--vann-30: #B2CBCF;
+	--vann-40: #99BABF;
+	--vann-50: #80A8AF;
+	--vann-60: #6697A0;
+	--vann-70: #4C8690;
+	--vann-80: #337580;
+	--vann-90: #196370;
+	--vann: #005260;
+
+	--himmel-10: #E5F5F9;
+	--himmel-20: #CCEBF3;
+	--himmel-30: #B2E1ED;
+	--himmel-40: #99D7E7;
+	--himmel-50: #80CDE0;
+	--himmel-60: #66C3DA;
+	--himmel-70: #4CB9D4;
+	--himmel-80: #33AFCE;
+	--himmel-90: #19A5C8;
+	--himmel: #005260;
+}
+
+
 /* HTML Elements styling */
 input, select, textarea, button {
   font-family: inherit;
   font-size: inherit;
+}
+
+button {
+	padding: 4px;
+	cursor: pointer;
+	background-color: var(--himmel-20);
+	border: 1px solid black;
+	border-radius: 5px;
+} 
+
+button.link {
+	padding: 0px;
+	background-color: inherit;
+	border: none;
+	text-decoration: underline;
+	color: var(--vann);
+}
+
+button.link span {
+	font-size: 18px;
+	padding: 0px 5px;
+	vertical-align: middle !important;
+}
+
+button.link:hover {
+	color: #000;
+}
+
+dialog {
+	width: 80vw;
+	height: 80vh;
+	margin: auto;
+	border: none;
+	padding: 32px
+}
+dialog::backdrop {
+	background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7));
+	animation: fade-in 1s;
+}
+
+@keyframes fade-in {
+	from {
+			opacity: 0;
+	}
+	to {
+			opacity: 1;
+	}
 }
