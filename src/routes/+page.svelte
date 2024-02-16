@@ -1,6 +1,6 @@
 <div class="littInfo">
   <h1>Debug User Status Tool</h1>
-  <p>Et verktøy hvor du kan søke på visningsnavn, brukernavn, e-post eller personnummer. Verktøyet søker i mange systemer og returnerer debuginfo, en visuell representasjon av feilsituasjoner og eventuelle løsningsforslag.</p>
+  <p>Et verktøy hvor du kan søke på visningsnavn, brukernavn, eller e-post. Verktøyet søker i mange systemer og returnerer debuginfo, en visuell representasjon av feilsituasjoner og eventuelle løsningsforslag.</p>
 </div>
 
 <!-- Kanskje mekke tidligere søk under her? -->

@@ -5,6 +5,10 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 > [!IMPORTANT]  
 > [./src/routes/+layout.js](./src/routes/+layout.js) is set with `export const ssr = false` - Which disables server-side-rendering, and ultimately turns the entire project into an SPA (single page application). This can cause some side-effects when trying to use built-in SvelteKit features, so be aware of *when and where* stuff will run when your components mounts/loads/are destroyed/unloads.
 
+## Easter eggs
+- legg til U foran FINT når FINT feiler
+- Legg til noe rart på visse brukere
+
 ## Developing
 
 Once you've cloned or forked the repo and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:

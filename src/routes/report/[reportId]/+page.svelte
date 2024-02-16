@@ -65,6 +65,8 @@
           <p>Generer tester for brukeren...</p>
         </div>    
       {/if}
+      Server runtime (kvernetid) {reportData.runTime} ms<br>
+      User runtime (fra innsending til ferdig) {(new Date(reportData.finishedTimestamp) - new Date(reportData.createdTimestamp))} ms
       {#each reportData.systems as system}
         <div class="system">
           <System system={system} />

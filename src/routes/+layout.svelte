@@ -4,7 +4,7 @@
   import { login, logout } from '../lib/auth/msal-auth'
   import DusteSearchBar from '../lib/components/DusteSearchBar.svelte';
 
-  const appTitle = "D.U.S.T"
+  const appTitle = "🥸 D.U.S.T"
 
 </script>
 

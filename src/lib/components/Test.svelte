@@ -36,7 +36,7 @@
                 <dialog bind:this={dataModal}>
                     <form method="dialog">
                         <button>Lukk</button>
-                        <pre>{JSON.stringify(test.result.raw)}</pre>
+                        <pre>{JSON.stringify(test.result.raw, null, 2)}</pre>
                     </form>
                 </dialog>
                 <button class="link" on:click={() => {dataModal.showModal()}}>Vis data</button>

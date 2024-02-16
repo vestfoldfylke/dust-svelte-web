@@ -8,7 +8,7 @@
     let warnings = 0
     let errors = 0
 
-    let collapsed = false
+    let collapsed = true
     let dataModal
 
     const getSystemStatus = (tests) => {
@@ -34,9 +34,11 @@
         warnings = status.warnings
         errors = status.errors
     }
+    /*
     $: {
         collapsed = system.finishedTimestamp && systemStatus === "ok"
     }
+    */
 </script>
 
 <div class="system{!collapsed ? ' open' : ''}">
