@@ -31,6 +31,8 @@
 
   // Kjøres når vi har havna på siden
   afterNavigate(() => {
+    // reset timer
+    startTime = new Date()
     const fetchReportData = async () => {
       const { status, data } = await getReport($page.params.reportId)
       reportData = data
