@@ -318,7 +318,8 @@ export const generateMockReport = (inProgress) => {
     queued: true,
     ready: false,
     finishedTimestamp: inProgress ? null : '2024-02-06T11:42:25.431Z',
-    runtime: null,
+    serverRuntime: inProgress ? null : 10578,
+    totalRuntime: inProgress ? null : 11698,
     user: {
       _id: '65c0c2b9eb182ba33f365b36',
       userPrincipalName: 'per.son@fylke.no',
