@@ -5,11 +5,29 @@
   import System from '../../../lib/components/System.svelte';
   import IconSpinner from '../../../lib/components/Icons/IconSpinner.svelte';
   import PersonCard from '../../../lib/components/PersonCard.svelte';
+  import { onMount } from 'svelte';
 
   let reportData
   let statusCode
   let interval
   let intervals = []
+
+  // Runtime stuff
+  let startTime = new Date()
+  let time = new Date()
+
+  onMount(() => {
+		const timeInterval = setInterval(() => {
+			time = new Date()
+		}, 100)
+
+		return () => {
+			clearInterval(timeInterval)
+		}
+	})
+
+  $: runtime = time - startTime
+
 
   // Kjøres når vi har havna på siden
   afterNavigate(() => {
@@ -65,8 +83,13 @@
           <p>Generer tester for brukeren...</p>
         </div>    
       {/if}
-      Server runtime (kvernetid) {reportData.runTime} ms<br>
-      User runtime (fra innsending til ferdig) {(new Date(reportData.finishedTimestamp) - new Date(reportData.createdTimestamp))} ms
+      <div class="runtime">
+        {#if reportData.totalRuntime}
+          {(reportData.totalRuntime / 1000).toFixed(1)} s
+        {:else}
+          {(runtime / 1000).toFixed(1)} s
+        {/if}
+      </div>
       {#each reportData.systems as system}
         <div class="system">
           <System system={system} />
@@ -78,12 +101,16 @@
 
 
 <style>
-  .system:nth-child(even) {
+  .system:nth-child(odd) {
     background-color: var(--vann-10);
   }
   .systemPlaceholder {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .runtime {
+    display: flex;
+    justify-content: right;
+  }
 </style>
