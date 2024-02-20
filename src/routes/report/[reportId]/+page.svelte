@@ -86,6 +86,7 @@
         </div>    
       {/if}
       <div class="runtime">
+        <span class="material-symbols-outlined">timer</span>
         {#if reportData.totalRuntime}
           {(reportData.totalRuntime / 1000).toFixed(1)} s
         {:else}
@@ -114,5 +115,10 @@
   .runtime {
     display: flex;
     justify-content: right;
+    align-items: center;
+    /*font-family: "Courier New", monospace;*/
   }
+  .runtime span {
+    font-size: 20px;
+  } 
 </style>
