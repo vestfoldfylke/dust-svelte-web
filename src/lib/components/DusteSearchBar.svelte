@@ -1,8 +1,7 @@
 <script>
-    import SearchBar from "./SearchBar.svelte";
+    import SearchBar from "./SearchBar.svelte"
     import { userSearch, createReport } from "../useApi"
-    import { goto } from '$app/navigation';
-
+    import { goto } from '$app/navigation'
     
     const searchFunc = async (query) => {
         return (await userSearch(query)).data
