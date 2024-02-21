@@ -1,5 +1,5 @@
 <script>
-    import HighlightJson from "./HighlightJson.svelte";
+    import HighlightJson from "./HighlightJson.svelte"
     import IconSpinner from "./Icons/IconSpinner.svelte"
     import TestStatusCircle from "./TestStatusCircle.svelte"
 
@@ -46,8 +46,9 @@
                             <h2>{test.title} - data</h2>
                             <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
                         </div>
-
-                        <HighlightJson json={test.result.raw} />
+                        <div class="rawData">
+                            <HighlightJson json={test.result.raw} />
+                        </div>
                         <!--<pre>{JSON.stringify(test.result.raw, null, 2)}</pre>-->
                     </form>
                 </dialog>
@@ -79,5 +80,11 @@
         justify-content: space-between;
         border-bottom: 1px solid #c3c3c3;
         margin-bottom: 16px;
+    }
+    .rawData {
+        padding: 0px 8px;
+        font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
+        font-size: 14px;
+        letter-spacing: 0.5px;
     }
 </style>

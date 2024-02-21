@@ -1,6 +1,6 @@
 <script>
 
-  export let json = { hei: "tuttut", hade: false, obj: { hallllla: "oi", balla: true, etarray: [ 'mimimi', { oioio: 23 } ] }, etArrayHEr: ['Maaaama', 'just killed a maaan'], sistemann: "tuitui" }
+  export let json = { hei: "tuttut", hade: false, obj: { hallllla: "oi", balla: true, etarray: [ 'mimimi', { oioio: 23 } ] }, etArrayHEr: ['Maaaama', 'just killed a maaan'], sistemann: "tuitui", jijiji: null }
   export let open = true
   export let level = 1
   export let isLastKey = true
@@ -20,14 +20,14 @@
   {#each Object.entries(json) as keyval}
     <span class="line">
       <br>
-      {#if typeof keyval[1] !== 'object'}
+      {#if typeof keyval[1] !== 'object' || keyval[1] === null || keyval[1] === undefined}
         {#if !Number(keyval[0]) && keyval[0] !== "0"}
           <span class="property">{@html tabs}"{keyval[0]}":</span>
         {:else}
           {@html rootTabs}&nbsp; <!--add one for good measure-->
         {/if}
-        <span class={typeof keyval[1]}>
-          {typeof keyval[1] === 'string' ? `"${keyval[1]}"` : keyval[1]}{keys.indexOf(keyval[0]) === keys.length - 1 ? '' : ','}
+        <span class={typeof keyval[1] === 'object' ? 'null' : typeof keyval[1]}>
+          {typeof keyval[1] === 'string' ? `"${keyval[1]}"` : `${keyval[1]}`}{keys.indexOf(keyval[0]) === keys.length - 1 ? '' : ','}
         </span>
       {:else}
         <svelte:self json={keyval[1]} rootPropName={(!Number(keyval[0]) && keyval[0] !== "0") ? `"${keyval[0]}": ` : ''} level={level + 1} open={true} isLastKey={keys.indexOf(keyval[0]) === keys.length - 1} />
@@ -40,51 +40,19 @@
   {@html rootTabs}<button class="expandable" on:click={() => {open = !open}}>{Array.isArray(json) ? `${rootPropName}[ ...${keys.length}... ]` : `${rootPropName}{ ...${keys.length}... }`}{!isLastKey ? ',' : ''}</button>
 {/if}
 
-<!--Original
-{#if open}
-  <button class="expandable" on:click={() => {open = !open}}>{Array.isArray(json) ? '[' : '{'}</button>
-  {#each Object.entries(json) as keyval}
-    <span class="line">
-      <br>
-      {#if !Number(keyval[0]) && keyval[0] !== "0"}
-        <span class="property">{@html tabs}"{keyval[0]}":</span>
-      {:else}
-        {@html rootTabs}&nbsp; <!--add one for good measure
-      {/if}
-      {#if typeof keyval[1] !== 'object'}
-        <span class={typeof keyval[1]}>
-          {typeof keyval[1] === 'string' ? `"${keyval[1]}"` : keyval[1]}{keys.indexOf(keyval[0]) === keys.length - 1 ? '' : ','}
-        </span>
-      {:else}
-        <svelte:self json={keyval[1]} level={level + 1} open={true} isLastKey={keys.indexOf(keyval[0]) === keys.length - 1} />
-      {/if}
-    </span>
-  {/each}
-  <br>
-  {@html rootTabs}{Array.isArray(json) ? ']' : '}'}{!isLastKey ? ',' : ''}
-  {:else}
-  <button class="expandable" on:click={() => {open = !open}}>{Array.isArray(json) ? '[ ... ]' : '{ ... }'}{!isLastKey ? ',' : ''}</button>
-{/if}
-  -->
 
 <style>
-  .tt {
-    display: inline-block;
-  }
-  .code {
-    display: inline-block;
-  }
-  div {
-    font-family: "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
-  }
   .string {
-    color: red;
+    color: #008000;
   }
   .number {
-    color: blue;
+    color: #ee422e;
   }
   .boolean {
-    color: aquamarine;
+    color: #ff8c00;
+  }
+  .null {
+    color: #004ed0;
   }
   button.expandable {
     padding: 0px;
@@ -94,13 +62,15 @@
     background-color: inherit;
   }
   button.expandable:hover {
-    background-color: aquamarine;
+    background-color: #E4E5E6;
+    font-weight: bold;
   }
   button.expandable:hover ~ .line {
-    background-color: aquamarine;
+    background-color: #E4E5E6;
   }
   button.expandable:hover ~ .closing-tag {
-    background-color: aquamarine;
+    background-color: #E4E5E6;
+    font-weight: bold;
   }
   .not-selectable {
     -webkit-touch-callout: none;

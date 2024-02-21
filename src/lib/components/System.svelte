@@ -2,6 +2,7 @@
     import IconSpinner from "./Icons/IconSpinner.svelte";
     import SystemStatusCircle from "./SystemStatusCircle.svelte";
     import Test from "./Test.svelte";
+    import HighlightJson from "./HighlightJson.svelte"
 
     export let system
     let systemStatus = "loading"
@@ -63,8 +64,13 @@
             <div class="systemFooter">
                 <dialog bind:this={dataModal}>
                     <form method="dialog">
-                        <button>Lukk</button>
-                        <pre>{JSON.stringify(system.data, null, 2)}</pre>
+                        <div class="modalTitle">
+                            <h2>{system.name} - data</h2>
+                            <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
+                        </div>
+                        <div class="rawData">
+                            <HighlightJson json={system.data} />
+                        </div>
                     </form>
                 </dialog>
                 <button class="link" on:click={() => {dataModal.showModal()}}>
@@ -118,5 +124,17 @@
         padding: 15px 0px;
         display: flex;
         justify-content: right;
+    }
+    .modalTitle {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #c3c3c3;
+        margin-bottom: 16px;
+    }
+    .rawData {
+        padding: 0px 8px;
+        font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
+        font-size: 14px;
+        letter-spacing: 0.5px;
     }
 </style>
