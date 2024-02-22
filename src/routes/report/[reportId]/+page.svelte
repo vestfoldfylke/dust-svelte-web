@@ -96,7 +96,7 @@
       </div>
       {#each reportData.systems as system}
         <div class="system">
-          <System system={system} />
+          <System system={system} finishedTimestamp={reportData.finishedTimestamp} />
         </div>  
       {/each}
     {/if}

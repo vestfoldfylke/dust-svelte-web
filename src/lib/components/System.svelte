@@ -5,6 +5,7 @@
     import HighlightJson from "./HighlightJson.svelte"
 
     export let system
+    export let finishedTimestamp
     let systemStatus = "loading"
     let warnings = 0
     let errors = 0
@@ -42,44 +43,58 @@
     */
 </script>
 
-<div class="system{!collapsed ? ' open' : ''}">
-    <div class="systemHeader{!collapsed ? ' open' : ''}" on:click={() => { collapsed = !collapsed }}>
-        {#if !system.finishedTimestamp}
-            <IconSpinner width="32px" />
-        {:else}
-            <SystemStatusCircle {systemStatus} {warnings} {errors} />
-        {/if}
-        <h3 class="systemTitle">{system.name}</h3>
-        {#if collapsed}
-            <span class="material-symbols-outlined">expand_more</span>
-        {:else}
-            <span class="material-symbols-outlined">expand_less</span>
-        {/if}
+{#if !system.finishedTimestamp && finishedTimestamp}
+    <div class="system">
+        <div class="systemHeader{!collapsed ? ' open' : ''}" on:click={() => { collapsed = !collapsed }}>
+            <SystemStatusCircle systemStatus={'failed'} />
+            <h3 class="systemTitle">{system.name} 🤒 (Har fått illebefinnende, prøv igjen senere)</h3>
+        </div>
     </div>
     {#if !collapsed}
         <div class="systemContent">
-            {#each system.tests as test}
-                <Test test={test} />
-            {/each}
-            <div class="systemFooter">
-                <dialog bind:this={dataModal}>
-                    <form method="dialog">
-                        <div class="modalTitle">
-                            <h2>{system.name} - data</h2>
-                            <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
-                        </div>
-                        <div class="rawData">
-                            <HighlightJson json={system.data} />
-                        </div>
-                    </form>
-                </dialog>
-                <button class="link" on:click={() => {dataModal.showModal()}}>
-                    <span class="material-symbols-outlined">data_object </span>Se raw-data
-                </button>
-            </div>
+            <p>Automatisk varsel er sendt til en dust. Dersom dusten ikke gjør jobben sin, kontakt servicedesk.</p>
         </div>
     {/if}
-</div>
+{:else}
+    <div class="system{!collapsed ? ' open' : ''}">
+        <div class="systemHeader{!collapsed ? ' open' : ''}" on:click={() => { collapsed = !collapsed }}>
+            {#if !system.finishedTimestamp}
+                <IconSpinner width="32px" />
+            {:else}
+                <SystemStatusCircle {systemStatus} {warnings} {errors} />
+            {/if}
+            <h3 class="systemTitle">{system.name}</h3>
+            {#if collapsed}
+                <span class="material-symbols-outlined">expand_more</span>
+            {:else}
+                <span class="material-symbols-outlined">expand_less</span>
+            {/if}
+        </div>
+        {#if !collapsed}
+            <div class="systemContent">
+                {#each system.tests as test}
+                    <Test test={test} />
+                {/each}
+                <div class="systemFooter">
+                    <dialog bind:this={dataModal}>
+                        <form method="dialog">
+                            <div class="modalTitle">
+                                <h2>{system.name} - data</h2>
+                                <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
+                            </div>
+                            <div class="rawData">
+                                <HighlightJson json={system.data} />
+                            </div>
+                        </form>
+                    </dialog>
+                    <button class="link" on:click={() => {dataModal.showModal()}}>
+                        <span class="material-symbols-outlined">data_object </span>Se raw-data
+                    </button>
+                </div>
+            </div>
+        {/if}
+    </div>
+{/if}
 
 <style>
     .system.open {
