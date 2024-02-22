@@ -12,6 +12,8 @@
   let interval
   let intervals = []
 
+  const retryAfter = 2000
+
   // Runtime stuff
   let startTime = new Date()
   let time = new Date()
@@ -27,7 +29,6 @@
 	})
 
   $: runtime = time - startTime
-
 
   // Kjøres når vi har havna på siden
   afterNavigate(() => {
@@ -50,7 +51,7 @@
       }
     }
     
-    interval = setInterval(fetchReportData, 2000)
+    interval = setInterval(fetchReportData, retryAfter)
     intervals.push(interval)
     fetchReportData()
 
