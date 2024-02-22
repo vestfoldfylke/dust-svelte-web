@@ -107,7 +107,23 @@
     margin: auto;
     max-width: 1080px;
   }
-  .logoutContainer {
-    float: right;
+
+  @media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+    .topbar {
+      padding: 5px 0px;
+    }
+    .toptop {
+      padding: 5px;
+    }
+    .appTitle {
+      font-size: 10px;
+    }
+    .logo {
+      width: 92px;
+    }
+    .content {
+      padding: 5px;
+    }
   }
 </style>
