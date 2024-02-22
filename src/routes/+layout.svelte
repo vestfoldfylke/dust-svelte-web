@@ -6,6 +6,7 @@
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import IconSpinner from '../lib/components/Icons/IconSpinner.svelte'
 
   let account = null
   let currentPage = $page.url.pathname
@@ -14,7 +15,7 @@
 
 
   const appTitle = "🥸 D.U.S.T"
-  /* Prøv med en onMount her i stedet du... */
+
   onMount(() => {
     const authenticate = async () => {
       const msalClient = await getMsalClient()
@@ -41,23 +42,8 @@
 </script>
 
 {#if !account}
-  <div class="topbar">
-    <div class="toptop">
-      <div>
-        <img class="logo" src={logo} alt="Fylkekommunens logo" />
-      </div>
-      <h1>{appTitle}</h1>
-      <div>
-        <div>Laster...</div>
-      </div>
-    </div>
-    <div class="bottomtop">
-      Laster...
-    </div>
-  </div>
-  <div class="content">
-  </div>
-  <div class="footer">
+  <div class="loading">
+    <IconSpinner width={"32px"} />
   </div>
 {:else}
   <div class="topbar">
@@ -66,9 +52,10 @@
         <img class="logo" src={logo} alt="Fylkekommunens logo" />
       </div>
       <a href="/" title="Gå til forsiden" class="appTitle"><h1>{appTitle}</h1></a>
-      <div>
+      <div class="topbarOptions">
         <div>{account.name}</div>
-        <div class="logoutContainer"><button class="link" on:click={async () => {await logout()}}><span class="material-symbols-outlined">logout</span>Logg ut</button></div>
+        <div><button class="link" on:click={() => {goto('/help', { replaceState: false, invalidateAll: true })}}><span class="material-symbols-outlined">help</span>Hjelp</button></div>
+        <div><button class="link" on:click={async () => {await logout()}}><span class="material-symbols-outlined">logout</span>Logg ut</button></div>
       </div>
     </div>
     <div class="bottomtop">
@@ -83,6 +70,10 @@
 {/if}
 
 <style>
+  .loading {
+    width: 100%;
+    margin: auto;
+  }
   .appTitle {
     color: black;
     text-decoration: none;
@@ -98,6 +89,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 40px 40px 40px;
+  }
+  .topbarOptions {
+    float: right;
+    display: flex;
+    flex-direction: column;
+    align-items: self-end;
   }
   .bottomtop {
     width: 100%;
