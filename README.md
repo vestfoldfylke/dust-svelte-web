@@ -5,6 +5,21 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 > [!IMPORTANT]  
 > [./src/routes/+layout.js](./src/routes/+layout.js) is set with `export const ssr = false` - Which disables server-side-rendering, and ultimately turns the entire project into an SPA (single page application). This can cause some side-effects when trying to use built-in SvelteKit features, so be aware of *when and where* stuff will run when your components mounts/loads/are destroyed/unloads.
 
+## Description
+Frontend for D.U.S.T
+
+A simple SvelteKit frontend where users can search for, and genereate debug reports for other users. Searchable users come from mongodb-collection which has to be maintained by some other job [see DUSTE-KVERNAs update-db-users](https://github.com/vestfoldfylke/duste-kvern/tree/main/scripts/update-db-users)
+
+**Flow**
+- User is logged in
+- User searchs for another user to debug, and selects it from a dropdown in the searchbar
+- On selection, a report is generated in mongodb through API-call to [DUST-API](https://github.com/vestfoldfylke/azf-dust-api-v2)
+- User is navigated to /report/{id-of-generated-report}
+- Browser/client polls the report with setInterval every given ms
+  - If 202 - continue polling
+  - If 200 - report is complete
+- [DUSTE-KVERNA](https://github.com/vestfoldfylke/duste-kvern) continuously polls mongodb for new reports and handles all data-fetching / testing, and updates the report in mongodb
+
 ## Easter eggs
 - legg til U foran FINT når FINT feiler
 - Legg til noe rart på visse brukere
