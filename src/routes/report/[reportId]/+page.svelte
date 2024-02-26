@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores'
   import { getReport } from '../../../lib/useApi'
-  import { afterNavigate, beforeNavigate } from '$app/navigation'
+  import { afterNavigate, beforeNavigate, goto } from '$app/navigation'
   import System from '../../../lib/components/System.svelte';
   import IconSpinner from '../../../lib/components/Icons/IconSpinner.svelte';
   import PersonCard from '../../../lib/components/PersonCard.svelte';
@@ -30,7 +30,12 @@
 
   $: runtime = time - startTime
 
-  // Kjøres når vi har havna på siden
+  // Quick fix - just navigate to the same page to get afterNavigate to run
+  onMount(() => {
+    goto(`/report/${$page.params.reportId}`)
+  })
+
+  // Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
   afterNavigate(() => {
     // reset timer
     startTime = new Date()

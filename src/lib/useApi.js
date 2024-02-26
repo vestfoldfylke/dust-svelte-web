@@ -14,6 +14,7 @@ const getDusteToken = async () => {
     accessToken = (await msalClient.acquireTokenSilent({ scopes: [import.meta.env.VITE_DUST_API_SCOPE] })).accessToken
     return accessToken
   } catch (error) {
+    // EN CASE HER ER AT BRUKER har tilgang på frontend men ikke api (app registrering)
     if (error.toString().startsWith('Error: User not logged in yet')) { // Liten frekkas - om bruker ikke er logget inn, kast en error og vent på "vellykket" (hva slags ord skal brukes her egt???) login
       throw error
     }
