@@ -78,13 +78,20 @@
 {:else}
   <div>
     <PersonCard user={reportData.user} />
-    <!--<pre>{JSON.stringify(reportData.user, null, 2)}</pre>-->
   </div>
   {#if !reportData.systems}
     <div class="systemPlaceholder">
-      Vi har ingen tester for denne brukertypen :(
+      Vi har ingen tester for denne brukertypen 😱
     </div>
     {:else}
+      {#if reportData.runtimeAlert}
+        <div class="runtimeAlert">
+          Aiaiai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige slik at de kan se på årsaken... Beklager ventetiden.
+        </div>
+        <div>
+          <br> <!--Haha, just to make nth-child be consistent (don't know why though) -->
+        </div>
+      {/if}
       {#if reportData.systems?.length < 1}
         <div class="systemPlaceholder">
           <IconSpinner width="20px" />
@@ -101,8 +108,8 @@
       </div>
       {#each reportData.systems as system}
         <div class="system">
-          <System system={system} finishedTimestamp={reportData.finishedTimestamp} />
-        </div>  
+          <System system={system} />
+        </div>
       {/each}
     {/if}
 {/if}
@@ -126,5 +133,10 @@
   }
   .runtime span {
     font-size: 20px;
-  } 
+  }
+  .runtimeAlert {
+    padding: 8px 15px;
+    border: 4px solid var(--nype);
+    background-color: var(--nype-10);
+  }
 </style>

@@ -46,7 +46,11 @@ export const userSearch = async (query) => {
   return await dusteRequest('get', `UserSearch?query=${query}`)
 }
 
-// Get report object from db
+/**
+ * 
+ * @param {string} reportId ObjectId for the report in mongodb 
+ * @returns reportData
+ */
 export const getReport = async (reportId) => {
   if (import.meta.env.VITE_MOCK_API && import.meta.env.VITE_MOCK_API === 'true') {
     const mockData = await import('./helpers/api-mock-data')

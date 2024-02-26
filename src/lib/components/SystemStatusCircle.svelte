@@ -16,8 +16,6 @@
         <div class="systemStatus warn">{warnings}</div>
     {:else if systemStatus === "error"}
         <div class="systemStatus error">{errors}</div>
-    {:else if systemStatus === "failed"}
-        <div class="systemStatus failed">!</div>
     {/if}
 </div>
 
@@ -42,9 +40,5 @@
     }
     .error {
         border: 4px solid #ec4d5d;
-    }
-    .failed {
-        border: 4px solid #ec4d5d;
-        font-size: 20px;
     }
 </style>
