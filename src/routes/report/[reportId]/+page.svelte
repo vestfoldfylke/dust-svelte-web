@@ -32,7 +32,7 @@
 
   // Quick fix - just navigate to the same page to get afterNavigate to run
   onMount(() => {
-    goto(`/report/${$page.params.reportId}`)
+    goto(`/report/${$page.params.reportId}`, {  replaceState: false })
   })
 
   // Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
