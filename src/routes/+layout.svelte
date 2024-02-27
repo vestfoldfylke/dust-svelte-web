@@ -1,6 +1,6 @@
 <script>
   import '../app.css' // Add global css (and make it hot reload)
-  import logo from '$lib/assets/logo.png'
+  import logo from '$lib/assets/logo.svg'
   import { login, logout, getMsalClient } from '../lib/auth/msal-auth'
   import DusteSearchBar from '../lib/components/DusteSearchBar.svelte'
   import { onMount } from 'svelte'
