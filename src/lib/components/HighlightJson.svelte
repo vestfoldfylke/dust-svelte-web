@@ -27,7 +27,7 @@
           {@html rootTabs}&nbsp; <!--add one for good measure-->
         {/if}
         <span class={typeof keyval[1] === 'object' ? 'null' : typeof keyval[1]}>
-          {typeof keyval[1] === 'string' ? `"${keyval[1]}"` : `${keyval[1]}`}{keys.indexOf(keyval[0]) === keys.length - 1 ? '' : ','}
+          {typeof keyval[1] === 'string' ? `"${keyval[1]}"` : `${keyval[1]}`}{#if keys.indexOf(keyval[0]) !== keys.length - 1}<span class="endComma">,</span>{/if}
         </span>
       {:else}
         <svelte:self json={keyval[1]} rootPropName={(!Number(keyval[0]) && keyval[0] !== "0") ? `"${keyval[0]}": ` : ''} level={level + 1} open={true} isLastKey={keys.indexOf(keyval[0]) === keys.length - 1} />
@@ -79,6 +79,9 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+  }
+  .endComma {
+    color: black;
   }
 </style>
 
