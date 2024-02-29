@@ -17,7 +17,7 @@
         <div class="mainStuff">
             <div class="userTitle">
                 <div class="smallBadge">
-                    <InitialsBadge size='small' initials={"JT"} />
+                    <InitialsBadge size='small' initials={getInitialsFromName(user.displayName)} />
                 </div>
                 <h2>{user.displayName}</h2>
             </div>
