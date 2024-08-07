@@ -6,7 +6,7 @@ Everything you need to build a Svelte project, powered by [`create-svelte`](http
 > [./src/routes/+layout.js](./src/routes/+layout.js) is set with `export const ssr = false` - Which disables server-side-rendering, and ultimately turns the entire project into an SPA (single page application). This can cause some side-effects when trying to use built-in SvelteKit features, so be aware of *when and where* stuff will run when your components mounts/loads/are destroyed/unloads.
 
 ## Description
-Frontend for D.U.S.T
+Frontend for D.U.S.T 🥸
 
 A simple SvelteKit frontend where users can search for, and genereate debug reports for other users. Searchable users come from mongodb-collection which has to be maintained by some other job [see DUSTE-KVERNAs update-db-users](https://github.com/vestfoldfylke/duste-kvern/tree/main/scripts/update-db-users)
 
