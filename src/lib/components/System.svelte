@@ -59,7 +59,9 @@
     {#if !collapsed}
         <div class="systemContent">
             {#each system.tests as test}
-                <Test test={test} />
+                {#if test.result?.status !== 'ignore'}
+                    <Test test={test} />
+                {/if}
             {/each}
             <div class="systemFooter">
                 <dialog bind:this={dataModal}>
