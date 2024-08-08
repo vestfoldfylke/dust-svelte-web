@@ -25,9 +25,9 @@
                 {user.userPrincipalName}
             </h3>
 
-            <p>{user.samAccountName}</p>
-            <p>{user.company}</p>
-            <p>{user.title}</p>
+            <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samaccount ? feidenavn??')}</p>
+            <p>{user.companyName}</p>
+            <p>{user.jobTitle}</p>
         </div>
     </div>
 </div>
