@@ -1,20 +1,22 @@
 <script>
   import '../app.css' // Add global css (and make it hot reload)
   import logo from '$lib/assets/logo.png'
+  import christmasDust from '$lib/assets/christmas-dust.png'
+  import easterDust from '$lib/assets/easter-dust.png'
   import { login, logout, getMsalClient } from '../lib/auth/msal-auth'
   import DusteSearchBar from '../lib/components/DusteSearchBar.svelte'
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
   import IconSpinner from '../lib/components/Icons/IconSpinner.svelte'
+  import { isChristmas, isEaster } from '../lib/helpers/holidays.js';
 
   let account = null
   let currentPage = $page.url.pathname
   console.log('Rett på: ', currentPage)
   console.log('Fra window: ', window.location.href)
 
-
-  const appTitle = "🥸 D.U.S.T"
+  const appTitle = "D.U.S.T"
 
   onMount(() => {
     const authenticate = async () => {
@@ -51,7 +53,18 @@
       <div>
         <img class="logo" src={logo} alt="Fylkekommunens logo" />
       </div>
-      <a href="/" title="Gå til forsiden" class="appTitle"><h1>{appTitle}</h1></a>
+        <a href="/" title="Gå til forsiden" class="appTitleLink">
+          <h1 class="appTitle">
+            {#if isChristmas()}
+              <img src={christmasDust} style="height: 64px; width: 64px;" alt="Juledust" />
+            {:else if isEaster()}
+              <img src={easterDust} style="height: 64px; width: 64px;" alt="Påskedust" />
+            {:else}
+              🥸
+            {/if}
+            {appTitle}
+          </h1>
+        </a>
       <div class="topbarOptions">
         <div>{account.name}</div>
         <div><button class="link" on:click={() => {goto('/help', { replaceState: false, invalidateAll: true })}}><span class="material-symbols-outlined">help</span>Hjelp</button></div>
@@ -75,6 +88,12 @@
     margin: auto;
   }
   .appTitle {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+  }
+  .appTitleLink {
     color: black;
     text-decoration: none;
   }
