@@ -338,8 +338,8 @@ export const generateMockReport = (inProgress) => {
       departmentShort: 'ORG-DIGI',
       departmentAdditional: null,
       office: 'Alkishuset i Tønsberg',
-      company: 'Bryggeriet',
-      title: 'Ølsmaker',
+      companyName: 'Bryggeriet',
+      jobTitle: 'Ølsmaker',
       state: 'ORG',
       feide: false
     },
