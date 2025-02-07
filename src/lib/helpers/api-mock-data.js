@@ -341,7 +341,8 @@ export const generateMockReport = (inProgress) => {
       companyName: 'Bryggeriet',
       jobTitle: 'Ølsmaker',
       state: 'ORG',
-      feide: false
+      feide: false,
+      extraCaution: true, // Set to false to remove caution box from mock
     },
     caller: {
       upn: 'demo.spokelse@vestfoldfylke.no',

@@ -31,6 +31,15 @@
         </div>
     </div>
 </div>
+{#if user.extraCaution}
+    <div class="cautionBox">
+        <p>⚠️ Ikke utgi informasjon til noen slik at eleven knyttes til skolen eller et geografisk område.
+            {#if import.meta.env.VITE_EXTRA_CAUTION_LINK}
+                <a href="{import.meta.env.VITE_EXTRA_CAUTION_LINK}" target="_blank">Mer informasjon.</a>
+            {/if}
+        </p>
+    </div>
+{/if}
 
 <style>
     .personCard {
@@ -53,6 +62,11 @@
     }
     .upn {
         margin-bottom: 6px;
+    }
+    .cautionBox {
+        border: 5px solid #FFBA33;
+        padding: 0.5rem;
+        text-align: center;
     }
     @media(max-width: 885px) {
         .userBadge {
