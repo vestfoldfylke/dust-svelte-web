@@ -31,6 +31,16 @@
         </div>
     </div>
 </div>
+{#if user.extraCaution}
+    <div class="cautionBox">
+        <span class="cautionIcon">⚠️</span><span>SVAR: "Jeg finner ingen brukere med det navnet i systemet vårt"</span>
+            <!--
+            {#if import.meta.env.VITE_EXTRA_CAUTION_LINK}
+                <a href="{import.meta.env.VITE_EXTRA_CAUTION_LINK}" target="_blank">Mer informasjon.</a>
+            {/if}
+            -->
+    </div>
+{/if}
 
 <style>
     .personCard {
@@ -53,6 +63,18 @@
     }
     .upn {
         margin-bottom: 6px;
+    }
+    .cautionBox {
+        border: 5px solid #ec4d5d;
+        padding: 0.5rem;
+        margin-bottom: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+    .cautionIcon {
+        font-size: 2rem;
     }
     @media(max-width: 885px) {
         .userBadge {
