@@ -21,7 +21,6 @@
 </div>
 <!-- Easter eggs -->
 {#if systemStatus === "warn" && isEaster()}
-{console.log(`Easter egg! ${isEaster()}`)}
     <div style="font-size: 32px;">🐥</div>
 {:else if systemStatus === "error" && isChristmas()}
     <div style="font-size: 32px;">🎅</div>
