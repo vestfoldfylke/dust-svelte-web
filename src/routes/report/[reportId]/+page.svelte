@@ -99,7 +99,7 @@
                     <br />
                 {/if}
                 {#if system.loweredName.includes('fint') || system.loweredName.includes('inschool')}
-                    FINT er UFINT <b><u>igjen</u></b> og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐌</h1>
+                    FINT er UFINT <b><u>igjen</u></b> - ({system.name}) - og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐌</h1>
                 {:else}
                     {system.name} er treg og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐢</h1>
                 {/if}
