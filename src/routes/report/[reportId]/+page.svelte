@@ -13,6 +13,8 @@
   let intervals = []
 
   const retryAfter = 2000
+  
+  const alertRuntimeMs = import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000
 
   // Runtime stuff
   let startTime = new Date()
@@ -71,6 +73,10 @@
     }
     // console.log('Navigated nå')
   })
+  
+  function getSystemsWithLongRuntime(report) {
+    return report.systems.filter(s => s.runtime > alertRuntimeMs).map(s => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }))
+  }
 </script>
 
 {#if !reportData}
@@ -85,8 +91,19 @@
     </div>
     {:else}
       {#if reportData.runtimeAlert}
+        {@const overLimitSystems = getSystemsWithLongRuntime(reportData)}
         <div class="runtimeAlert">
-          Aiaiai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige slik at de kan se på årsaken... Beklager ventetiden.
+            Aiaiai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige, saken vil bli sett på. Beklager ventetiden.<br />
+            {#each overLimitSystems as system, i}
+                {#if i > 0}
+                    <br />
+                {/if}
+                {#if system.loweredName.includes('fint') || system.loweredName.includes('inschool')}
+                    FINT er UFINT <b><u>igjen</u></b> - ({system.name}) - og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐌</h1>
+                {:else}
+                    {system.name} er treg og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐢</h1>
+                {/if}
+            {/each}
         </div>
         <div>
           <br> <!--Haha, just to make nth-child be consistent (don't know why though) -->

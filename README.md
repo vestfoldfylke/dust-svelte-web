@@ -46,6 +46,7 @@ VITE_DUST_API_URI="http://localhost:7071/api" # Url for API (either locally or r
 VITE_DUST_API_SCOPE="{scope_prefix}/user_impersonation" # user_impersonation SCOPE for the API
 VITE_MOCK_MSAL="false" # Set to true for mocking auth (API must be run locally as well if using this, and not using VITE_MOCK_API)
 VITE_MOCK_API="false" # Set to true if you want to mock API as well (all handled in client-browser)
+VITE_ALERT_RUNTIME_MS=30000 # How long a system's runtime must have run to show up as alerts (ms). Default is 30s (30000ms)
 ```
 
 #### Start dev
