@@ -98,7 +98,7 @@
                 {#if i > 0}
                     <br />
                 {/if}
-                {#if system.name.toLowerCase().includes('fint')}
+                {#if ['fint', 'inschool'].includes(system.name.toLowerCase())}
                     FINT er UFINT <b><u>igjen</u></b> og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐌</h1>
                 {:else}
                     {system.name} er treg og har brukt {system.runtime / 1000} sekunder <h1 style="display: inline;">🐢</h1>
