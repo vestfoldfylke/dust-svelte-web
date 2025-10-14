@@ -126,7 +126,12 @@
       try {
           const res = await search(searchValue)
           isSearching = false
-          if (res.length === 0) throw new Error('Nada users')
+          if (!Array.isArray(res)) {
+            throw new Error('Search function did not return an array. Probably an error were returned')
+          }
+          if (res.length === 0) {
+            throw new Error('Nada users')
+          }
           if (showPreview) {
               previewData = mapPreviewMapper(previewMapper(res)) // Hahahah
           }
