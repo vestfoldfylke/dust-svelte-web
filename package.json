@@ -17,6 +17,7 @@
 	"type": "module",
 	"dependencies": {
 		"@azure/msal-browser": "^3.10.0",
-		"axios": "^1.12.2"
+		"axios": "^1.12.2",
+		"svelte-confetti": "^2.3.2"
 	}
 }

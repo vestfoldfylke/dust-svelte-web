@@ -1,29 +1,59 @@
 <script>
+    import Confetti from 'svelte-confetti';
+
     import InitialsBadge from "./InitialsBadge.svelte";
 
     export let user
 
-    const getInitialsFromName = (displayName) => {
-        const lastSpaceIndex = displayName.lastIndexOf(' ')
-        return `${displayName.substring(0,1)} ${displayName.substring(lastSpaceIndex+1, lastSpaceIndex+2)}`
+    const getInitialsFromName = (reportUser) => {
+        if (hasBirthdayToday(reportUser)) {
+          return '🥳'
+        }
+
+        const lastSpaceIndex = reportUser.displayName.lastIndexOf(' ')
+        return `${reportUser.displayName.substring(0,1)} ${reportUser.displayName.substring(lastSpaceIndex+1, lastSpaceIndex+2)}`
+    }
+
+    const hasBirthdayToday = (reportUser) => {
+      const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? '0')
+      const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? '-1')
+      const today = new Date()
+
+      return date === today.getDate() && month === (today.getMonth() + 1)
+    }
+
+    const numberOfConfetti = (reportUser) => {
+      const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? `0`)
+
+      const today = new Date()
+      const currentYear = today.getFullYear() % 100 // Get last two digits of current year
+
+      // If userYear is greater than currentYear, it means the user was born in the previous century
+      return userYear > currentYear
+        ? (100 - userYear) + currentYear
+        : currentYear - userYear
     }
 </script>
 
 <div class="personCard">
     <div class="userHeader">
-        <div class ="userBadge">
-            <InitialsBadge size='large' initials={getInitialsFromName(user.displayName)} />
+        <div class="userBadge">
+            <InitialsBadge size='large' initials={getInitialsFromName(user)} />
         </div>
         <div class="mainStuff">
             <div class="userTitle">
                 <div class="smallBadge">
-                    <InitialsBadge size='small' initials={getInitialsFromName(user.displayName)} />
+                    <InitialsBadge size='small' initials={getInitialsFromName(user)} />
                 </div>
                 <h2>{user.displayName}</h2>
             </div>
             <h3 class="upn">
                 {user.userPrincipalName}
             </h3>
+
+            {#if hasBirthdayToday(user)}
+                <Confetti iterationCount=10 amount={numberOfConfetti(user)} duration=2500 delay={[0, 1000]} x={[0,4]} />
+            {/if}
 
             <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samaccount ? feidenavn??')}</p>
             <p>{user.companyName}</p>
