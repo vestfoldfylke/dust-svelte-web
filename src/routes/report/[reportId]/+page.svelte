@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores'
-  import { getReport } from '../../../lib/useApi'
+  import { getReport } from '$lib/useApi'
   import { afterNavigate, beforeNavigate, goto } from '$app/navigation'
   import System from '../../../lib/components/System.svelte';
   import IconSpinner from '../../../lib/components/Icons/IconSpinner.svelte';
@@ -53,6 +53,12 @@
         }
       } else if (status === 202) {
         // console.log('Status 202, da fortsetter vi interval')
+      } else if (status === 500) {
+        // console.log('Status 500, da stopper vi interval')
+        clearInterval(interval)
+        for (const inter of intervals) {
+          clearInterval(inter)
+        }
       } else {
         // console.log('status noe annet, what??')
       }
@@ -81,6 +87,10 @@
 
 {#if !reportData}
   Henter data
+{:else if statusCode === 500}
+    <div class="runtimeAlert">
+        Noe gikk galt ved henting av rapporten <b>{$page.params.reportId}</b>. Prøv en annen rapport eller kontakt en voksen
+    </div>
 {:else}
   <div>
     <PersonCard user={reportData.user} />

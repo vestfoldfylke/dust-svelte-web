@@ -28,13 +28,23 @@ const dusteRequest = async (method, endpoint, body) => {
   const headers = {
     authorization: `Bearer ${accessToken}`
   }
-  if (['get', 'delete'].includes(method.toLowerCase())) {
-    const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, { headers })
-    return { status: res.status, data: res.data }
-  } else {
-    const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, body, { headers })
+
+  if (method.toLowerCase() === 'delete') {
+    const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, {headers})
     return { status: res.status, data: res.data }
   }
+
+  if (method.toLowerCase() === 'get') {
+    try {
+      const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, {headers})
+      return {status: res.status, data: res.data}
+    } catch (error) {
+      return { status: error.response?.status || 500, data: error.response?.data || error.stack || error.toString() }
+    }
+  }
+
+  const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, body, {headers})
+  return { status: res.status, data: res.data }
 }
 
 // Search user base
@@ -43,6 +53,7 @@ export const userSearch = async (query) => {
     const mockData = await import('./helpers/api-mock-data')
     return { status: 200, data: mockData.users }
   }
+
   return await dusteRequest('get', `UserSearch?query=${query}`)
 }
 
@@ -68,6 +79,7 @@ export const createReport = async (user) => {
     const mockData = await import('./helpers/api-mock-data')
     return { status: 200, data: mockData.reportId }
   }
+
   return await dusteRequest('post', 'Report', user._id)
 }
 
