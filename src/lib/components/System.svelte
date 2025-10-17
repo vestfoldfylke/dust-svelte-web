@@ -12,7 +12,10 @@
     let collapsed = true
     let dataModal
 
-    const getSystemStatus = (tests) => {
+    const getSystemStatus = (tests, getSystemDataFailed) => {
+        if (getSystemDataFailed) {
+            return { systemStatus: "dead", warnings: 0, errors: 0 }
+        }
         const running = tests.filter(test => !test.result).length
         const warnings = tests.filter(test => test.result?.status === "warning").length
         const errors = tests.filter(test => test.result?.status === "error").length
@@ -30,7 +33,7 @@
         return  { systemStatus, warnings, errors }
     }
     $: {
-        let status = getSystemStatus(system.tests || [])
+        let status = getSystemStatus(system.tests || [], system.data?.getDataFailed)
         systemStatus = status.systemStatus
         warnings = status.warnings
         errors = status.errors
@@ -58,6 +61,15 @@
     </div>
     {#if !collapsed}
         <div class="systemContent">
+            {#if systemStatus === "dead"}
+                <div>
+                    {#if system.data?.customMessage}
+                        ⚠️ {system.data.customMessage}
+                    {:else}
+                        ☠️ Det skjedde en feil ved henting av data fra {system.name}. Prøv igjen senere eller kontakt en voksen.
+                    {/if}
+                </div>
+            {/if}
             {#each system.tests as test}
                 {#if test.result?.status !== 'ignore'}
                     <Test test={test} />
