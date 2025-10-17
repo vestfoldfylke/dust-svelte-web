@@ -17,6 +17,8 @@
         <div class="systemStatus warn">{warnings}</div>
     {:else if systemStatus === "error"}
         <div class="systemStatus error">{errors}</div>
+    {:else if systemStatus === "dead"}
+        <div class="systemStatus dead">😵</div>
     {/if}
 </div>
 <!-- Easter eggs -->
@@ -47,5 +49,8 @@
     }
     .error {
         border: 4px solid #ec4d5d;
+    }
+    .dead {
+        font-size: 40px;
     }
 </style>
