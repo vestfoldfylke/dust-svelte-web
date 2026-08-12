@@ -1,5 +1,10 @@
-import axios from "axios";
 import { getMsalClient, login } from "./auth/msal-auth.js";
+
+const readBody = async (res) => {
+  const contentType = res.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json")) return res.json();
+  return res.text();
+};
 
 const getDusteToken = async () => {
   // MOCK access token for local api (the access token is just a demo token - nothing dangerous)
@@ -31,22 +36,28 @@ const dusteRequest = async (method, endpoint, body) => {
     authorization: `Bearer ${accessToken}`
   };
 
-  if (method.toLowerCase() === "delete") {
-    const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, { headers });
-    return { status: res.status, data: res.data };
+  const url = `${import.meta.env.VITE_DUST_API_URI}/${endpoint}`;
+  const upperMethod = method.toUpperCase();
+  const init = { method: upperMethod, headers };
+
+  if (upperMethod !== "GET" && upperMethod !== "DELETE" && body !== undefined) {
+    init.headers = { ...headers, "content-type": "application/json" };
+    init.body = JSON.stringify(body);
   }
 
-  if (method.toLowerCase() === "get") {
+  if (upperMethod === "GET") {
     try {
-      const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, { headers });
-      return { status: res.status, data: res.data };
+      const res = await fetch(url, init);
+      const data = await readBody(res);
+      return { status: res.status, data };
     } catch (error) {
-      return { status: error.response?.status || 500, data: error.response?.data || error.stack || error.toString() };
+      return { status: 500, data: error.stack || error.toString() };
     }
   }
 
-  const res = await axios[method](`${import.meta.env.VITE_DUST_API_URI}/${endpoint}`, body, { headers });
-  return { status: res.status, data: res.data };
+  const res = await fetch(url, init);
+  const data = await readBody(res);
+  return { status: res.status, data };
 };
 
 // Search user base
@@ -87,7 +98,7 @@ export const createReport = async (user) => {
 
 // Get chucky
 export const getChuck = async () => {
-  const res = (await axios.get("https://api.chucknorris.io/jokes/categories")).data;
+  const res = await (await fetch("https://api.chucknorris.io/jokes/categories")).json();
   return res.map((ele) => {
     return {
       value: ele,
