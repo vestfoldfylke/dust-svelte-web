@@ -1,38 +1,36 @@
 <script>
-    import Confetti from 'svelte-confetti';
+import Confetti from "svelte-confetti";
 
-    import InitialsBadge from "./InitialsBadge.svelte";
+import InitialsBadge from "./InitialsBadge.svelte";
 
-    export let user
+export let user;
 
-    const getInitialsFromName = (reportUser) => {
-        if (hasBirthdayToday(reportUser)) {
-          return '🥳'
-        }
+const getInitialsFromName = (reportUser) => {
+  if (hasBirthdayToday(reportUser)) {
+    return "🥳";
+  }
 
-        const lastSpaceIndex = reportUser.displayName.lastIndexOf(' ')
-        return `${reportUser.displayName.substring(0,1)} ${reportUser.displayName.substring(lastSpaceIndex+1, lastSpaceIndex+2)}`
-    }
+  const lastSpaceIndex = reportUser.displayName.lastIndexOf(" ");
+  return `${reportUser.displayName.substring(0, 1)} ${reportUser.displayName.substring(lastSpaceIndex + 1, lastSpaceIndex + 2)}`;
+};
 
-    const hasBirthdayToday = (reportUser) => {
-      const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? '0')
-      const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? '-1')
-      const today = new Date()
+const hasBirthdayToday = (reportUser) => {
+  const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
+  const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
+  const today = new Date();
 
-      return date === today.getDate() && month === (today.getMonth() + 1)
-    }
+  return date === today.getDate() && month === today.getMonth() + 1;
+};
 
-    const numberOfConfetti = (reportUser) => {
-      const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? `0`)
+const numberOfConfetti = (reportUser) => {
+  const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? `0`);
 
-      const today = new Date()
-      const currentYear = today.getFullYear() % 100 // Get last two digits of current year
+  const today = new Date();
+  const currentYear = today.getFullYear() % 100; // Get last two digits of current year
 
-      // If userYear is greater than currentYear, it means the user was born in the previous century
-      return userYear > currentYear
-        ? (100 - userYear) + currentYear
-        : currentYear - userYear
-    }
+  // If userYear is greater than currentYear, it means the user was born in the previous century
+  return userYear > currentYear ? 100 - userYear + currentYear : currentYear - userYear;
+};
 </script>
 
 <div class="personCard">

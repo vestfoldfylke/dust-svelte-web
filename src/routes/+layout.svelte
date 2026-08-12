@@ -1,46 +1,45 @@
 <script>
-  import '../app.css' // Add global css (and make it hot reload)
-  import logo from '$lib/assets/vfk_logo.png'
-  import christmasDust from '$lib/assets/christmas-dust.png'
-  import easterDust from '$lib/assets/easter-dust.png'
-  import { login, logout, getMsalClient } from '../lib/auth/msal-auth'
-  import DusteSearchBar from '../lib/components/DusteSearchBar.svelte'
-  import { onMount } from 'svelte'
-  import { page } from '$app/stores'
-  import { goto } from '$app/navigation'
-  import IconSpinner from '../lib/components/Icons/IconSpinner.svelte'
-  import { isChristmas, isEaster } from '../lib/helpers/holidays.js';
+import "../app.css"; // Add global css (and make it hot reload)
+import { onMount } from "svelte";
+import { goto } from "$app/navigation";
+import { page } from "$app/stores";
+import christmasDust from "$lib/assets/christmas-dust.png";
+import easterDust from "$lib/assets/easter-dust.png";
+import logo from "$lib/assets/vfk_logo.png";
+import { getMsalClient, login, logout } from "../lib/auth/msal-auth.js";
+import DusteSearchBar from "../lib/components/DusteSearchBar.svelte";
+import IconSpinner from "../lib/components/Icons/IconSpinner.svelte";
+import { isChristmas, isEaster } from "../lib/helpers/holidays.js";
 
-  let account = null
-  let currentPage = $page.url.pathname
-  console.log('Rett på: ', currentPage)
-  console.log('Fra window: ', window.location.href)
+let account = null;
+let currentPage = $page.url.pathname;
+console.log("Rett på: ", currentPage);
+console.log("Fra window: ", window.location.href);
 
-  const appTitle = "D.U.S.T"
+const appTitle = "D.U.S.T";
 
-  onMount(() => {
-    const authenticate = async () => {
-      const msalClient = await getMsalClient()
-      if (msalClient.getActiveAccount()) {
-        account = msalClient.getActiveAccount()
-      }
-      if (!account) {
-        const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
-        account = loginResponse.account
-        if ($page.url.pathname !== loginResponse.loginRequestUrl) {
-          goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
-        }
+onMount(() => {
+  const authenticate = async () => {
+    const msalClient = await getMsalClient();
+    if (msalClient.getActiveAccount()) {
+      account = msalClient.getActiveAccount();
+    }
+    if (!account) {
+      const loginResponse = await login(false, $page.url.pathname); // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+      account = loginResponse.account;
+      if ($page.url.pathname !== loginResponse.loginRequestUrl) {
+        goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true });
       }
     }
+  };
 
-    authenticate()
+  authenticate();
 
-    return () => {
-      console.log('Destroyyyy')
-      // on destroy (probs just wipe state)
-    }
-  })
-
+  return () => {
+    console.log("Destroyyyy");
+    // on destroy (probs just wipe state)
+  };
+});
 </script>
 
 {#if !account}

@@ -1,88 +1,90 @@
 <script>
-  import { page } from '$app/stores'
-  import { getReport } from '$lib/useApi'
-  import { afterNavigate, beforeNavigate, goto } from '$app/navigation'
-  import System from '../../../lib/components/System.svelte';
-  import IconSpinner from '../../../lib/components/Icons/IconSpinner.svelte';
-  import PersonCard from '../../../lib/components/PersonCard.svelte';
-  import { onMount } from 'svelte';
+import { onMount } from "svelte";
+import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+import { page } from "$app/stores";
+import { getReport } from "$lib/useApi";
+import IconSpinner from "../../../lib/components/Icons/IconSpinner.svelte";
+import PersonCard from "../../../lib/components/PersonCard.svelte";
+import System from "../../../lib/components/System.svelte";
 
-  let reportData
-  let statusCode
-  let interval
-  let intervals = []
+let reportData;
+let statusCode;
+let interval;
+let intervals = [];
 
-  const retryAfter = 2000
-  
-  const alertRuntimeMs = import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000
+const retryAfter = 2000;
 
-  // Runtime stuff
-  let startTime = new Date()
-  let time = new Date()
+const alertRuntimeMs = import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000;
 
-  onMount(() => {
-		const timeInterval = setInterval(() => {
-			time = new Date()
-		}, 100)
+// Runtime stuff
+let startTime = new Date();
+let time = new Date();
 
-		return () => {
-			clearInterval(timeInterval)
-		}
-	})
+onMount(() => {
+  const timeInterval = setInterval(() => {
+    time = new Date();
+  }, 100);
 
-  $: runtime = time - startTime
+  return () => {
+    clearInterval(timeInterval);
+  };
+});
 
-  // Quick fix - just navigate to the same page to get afterNavigate to run
-  onMount(() => {
-    goto(`/report/${$page.params.reportId}`, {  replaceState: false })
-  })
+$: runtime = time - startTime;
 
-  // Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
-  afterNavigate(() => {
-    // reset timer
-    startTime = new Date()
-    const fetchReportData = async () => {
-      const { status, data } = await getReport($page.params.reportId)
-      reportData = data
-      statusCode = status
-      if (status === 200) {
-        // console.log('Status 200 da stopper vi interval')
-        clearInterval(interval)
-        for (const inter of intervals) {
-          clearInterval(inter)
-        }
-      } else if (status === 202) {
-        // console.log('Status 202, da fortsetter vi interval')
-      } else if (status === 500) {
-        // console.log('Status 500, da stopper vi interval')
-        clearInterval(interval)
-        for (const inter of intervals) {
-          clearInterval(inter)
-        }
-      } else {
-        // console.log('status noe annet, what??')
+// Quick fix - just navigate to the same page to get afterNavigate to run
+onMount(() => {
+  goto(`/report/${$page.params.reportId}`, { replaceState: false });
+});
+
+// Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
+afterNavigate(() => {
+  // reset timer
+  startTime = new Date();
+  const fetchReportData = async () => {
+    const { status, data } = await getReport($page.params.reportId);
+    reportData = data;
+    statusCode = status;
+    if (status === 200) {
+      // console.log('Status 200 da stopper vi interval')
+      clearInterval(interval);
+      for (const inter of intervals) {
+        clearInterval(inter);
       }
+    } else if (status === 202) {
+      // console.log('Status 202, da fortsetter vi interval')
+    } else if (status === 500) {
+      // console.log('Status 500, da stopper vi interval')
+      clearInterval(interval);
+      for (const inter of intervals) {
+        clearInterval(inter);
+      }
+    } else {
+      // console.log('status noe annet, what??')
     }
-    
-    interval = setInterval(fetchReportData, retryAfter)
-    intervals.push(interval)
-    fetchReportData()
+  };
 
-    return null
-  })
+  interval = setInterval(fetchReportData, retryAfter);
+  intervals.push(interval);
+  fetchReportData();
 
-  // Kjøres før vi navigerer vekk fra siden
-  beforeNavigate(() => {
-    clearInterval(interval) // Fjern kjøring av interval når det navigeres vekk fra sluggen / sida
-    for (const inter of intervals) {
-      clearInterval(inter)
-    }
-    // console.log('Navigated nå')
-  })
-  
-  function getSystemsWithLongRuntime(report) {
-    return report.systems.filter(s => s.runtime > alertRuntimeMs).map(s => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }))
+  return null;
+});
+
+// Kjøres før vi navigerer vekk fra siden
+beforeNavigate(() => {
+  clearInterval(interval); // Fjern kjøring av interval når det navigeres vekk fra sluggen / sida
+  for (const inter of intervals) {
+    clearInterval(inter);
   }
+  // console.log('Navigated nå')
+});
+
+function getSystemsWithLongRuntime(report) {
+  return report.systems
+    .filter((s) => s.runtime > alertRuntimeMs)
+    .map((s) => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }));
+}
 </script>
 
 {#if !reportData}

@@ -1,5 +1,5 @@
 <script>
-  export let width = '100px'
+export let width = "100px";
 </script>
 
 <div class="spinnerContainer" style="width: {width}">

@@ -1,44 +1,40 @@
 <script>
-    import IconSpinner from "./Icons/IconSpinner.svelte";
-    import SystemStatusCircle from "./SystemStatusCircle.svelte";
-    import Test from "./Test.svelte";
-    import HighlightJson from "./HighlightJson.svelte"
+import HighlightJson from "./HighlightJson.svelte";
+import IconSpinner from "./Icons/IconSpinner.svelte";
+import SystemStatusCircle from "./SystemStatusCircle.svelte";
+import Test from "./Test.svelte";
 
-    export let system
-    let systemStatus = "loading"
-    let warnings = 0
-    let errors = 0
+export let system;
+let systemStatus = "loading";
+let warnings = 0;
+let errors = 0;
 
-    let collapsed = true
-    let dataModal
+let collapsed = true;
+let dataModal;
 
-    const getSystemStatus = (tests, getSystemDataFailed) => {
-        if (getSystemDataFailed) {
-            return { systemStatus: "dead", warnings: 0, errors: 0 }
-        }
-        const running = tests.filter(test => !test.result).length
-        const warnings = tests.filter(test => test.result?.status === "warning").length
-        const errors = tests.filter(test => test.result?.status === "error").length
-        if (running > 0) {
-            systemStatus = "loading"
-        }
-        else if (errors > 0) {
-            systemStatus = "error"
-        }
-        else if (warnings > 0) {
-            systemStatus = "warn"
-        } else (
-            systemStatus = "ok"
-        )
-        return  { systemStatus, warnings, errors }
-    }
-    $: {
-        let status = getSystemStatus(system.tests || [], system.data?.getDataFailed)
-        systemStatus = status.systemStatus
-        warnings = status.warnings
-        errors = status.errors
-    }
-    /*
+const getSystemStatus = (tests, getSystemDataFailed) => {
+  if (getSystemDataFailed) {
+    return { systemStatus: "dead", warnings: 0, errors: 0 };
+  }
+  const running = tests.filter((test) => !test.result).length;
+  const warnings = tests.filter((test) => test.result?.status === "warning").length;
+  const errors = tests.filter((test) => test.result?.status === "error").length;
+  if (running > 0) {
+    systemStatus = "loading";
+  } else if (errors > 0) {
+    systemStatus = "error";
+  } else if (warnings > 0) {
+    systemStatus = "warn";
+  } else systemStatus = "ok";
+  return { systemStatus, warnings, errors };
+};
+$: {
+  let status = getSystemStatus(system.tests || [], system.data?.getDataFailed);
+  systemStatus = status.systemStatus;
+  warnings = status.warnings;
+  errors = status.errors;
+}
+/*
     $: {
         collapsed = system.finishedTimestamp && systemStatus === "ok"
     }

@@ -1,19 +1,18 @@
 <script>
-    import HighlightJson from "./HighlightJson.svelte"
-    import IconSpinner from "./Icons/IconSpinner.svelte"
-    import TestStatusCircle from "./TestStatusCircle.svelte"
+import HighlightJson from "./HighlightJson.svelte";
+import IconSpinner from "./Icons/IconSpinner.svelte";
+import TestStatusCircle from "./TestStatusCircle.svelte";
 
-    export let test
-    let dataModal
-    let solutionModal
+export let test;
+let dataModal;
+let solutionModal;
 
-    const norwegianStatus = (status) => {
-        if (status === "ok") return "OK"
-        if (status === "warning") return "Advarsel"
-        if (status === "error") return "Feil"
-        return ""
-    }
-
+const norwegianStatus = (status) => {
+  if (status === "ok") return "OK";
+  if (status === "warning") return "Advarsel";
+  if (status === "error") return "Feil";
+  return "";
+};
 </script>
 <div class="test">
     <div class="testHeader">

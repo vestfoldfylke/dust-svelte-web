@@ -1,7 +1,7 @@
 <script>
-    import IconSpinner from "./Icons/IconSpinner.svelte";
-    
-    export let test = { result: { status: null } }
+import IconSpinner from "./Icons/IconSpinner.svelte";
+
+export let test = { result: { status: null } };
 </script>
 
 <div>

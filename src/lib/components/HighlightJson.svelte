@@ -1,18 +1,23 @@
 <script>
+export let json = {
+  hei: "tuttut",
+  hade: false,
+  obj: { hallllla: "oi", balla: true, etarray: ["mimimi", { oioio: 23 }] },
+  etArrayHEr: ["Maaaama", "just killed a maaan"],
+  sistemann: "tuitui",
+  jijiji: null
+};
+export let open = true;
+export let level = 1;
+export let isLastKey = true;
+export let rootPropName = "";
 
-  export let json = { hei: "tuttut", hade: false, obj: { hallllla: "oi", balla: true, etarray: [ 'mimimi', { oioio: 23 } ] }, etArrayHEr: ['Maaaama', 'just killed a maaan'], sistemann: "tuitui", jijiji: null }
-  export let open = true
-  export let level = 1
-  export let isLastKey = true
-  export let rootPropName = ''
+const tab = "&nbsp;&nbsp;";
+const tabs = tab.repeat(level);
+const rootTabs = tab.repeat(level - 1);
 
-  const tab = '&nbsp;&nbsp;'
-  const tabs = tab.repeat(level)
-  const rootTabs = tab.repeat(level - 1)
-
-  const tabSpaces = 2
-  const keys = json ? Object.keys(json) : null
-
+const tabSpaces = 2;
+const keys = json ? Object.keys(json) : null;
 </script>
 
 {#if open}
