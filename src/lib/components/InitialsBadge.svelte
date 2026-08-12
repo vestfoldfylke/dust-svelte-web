@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
 export let initials = "? ?";
 export let size = "small";
 export let color = "himmel-30";
-export let image = undefined;
+export let image: string | undefined = undefined;
 </script>
 
 <main>

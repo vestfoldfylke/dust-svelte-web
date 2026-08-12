@@ -1,13 +1,25 @@
-<script>
+<script lang="ts">
 import HighlightJson from "./HighlightJson.svelte";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 import TestStatusCircle from "./TestStatusCircle.svelte";
 
-export let test;
-let dataModal;
-let solutionModal;
+type TestResult = {
+  status?: string | null;
+  message?: string;
+  solution?: string;
+  raw?: unknown;
+};
 
-const norwegianStatus = (status) => {
+type TestType = {
+  title: string;
+  result?: TestResult;
+};
+
+export let test: TestType;
+let dataModal: HTMLDialogElement;
+let solutionModal: HTMLDialogElement;
+
+const norwegianStatus = (status: string | null | undefined): string => {
   if (status === "ok") return "OK";
   if (status === "warning") return "Advarsel";
   if (status === "error") return "Feil";
@@ -46,7 +58,7 @@ const norwegianStatus = (status) => {
                             <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
                         </div>
                         <div class="rawData">
-                            <HighlightJson json={test.result.raw} />
+                            <HighlightJson json={test.result.raw as Record<string, unknown> | unknown[] | null} />
                         </div>
                         <!--<pre>{JSON.stringify(test.result.raw, null, 2)}</pre>-->
                     </form>

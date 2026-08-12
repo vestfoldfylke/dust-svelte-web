@@ -1,23 +1,31 @@
-<script>
+<script lang="ts">
 import { goto } from "$app/navigation";
 import { createReport, userSearch } from "../useApi.js";
 import SearchBar from "./SearchBar.svelte";
 
-const searchFunc = async (query) => {
-  return (await userSearch(query)).data;
+type SearchUser = Record<string, unknown> & {
+  _id?: string;
+  displayName?: string;
+  jobTitle?: string;
+  title?: string | null;
+  samAccountName?: string;
+  feidenavn?: string;
+  userType?: string;
+  companyName?: string;
 };
-const searchCallback = (searchRes) => {
-  // Do something with the searchCallback if you want
+
+const searchFunc = async (query: string): Promise<SearchUser[]> => {
+  return ((await userSearch(query)).data ?? []) as SearchUser[];
 };
-const createNewReport = async (user) => {
-  const reportId = (await createReport(user)).data;
+const createNewReport = async (user: SearchUser): Promise<void> => {
+  const reportId = (await createReport({ _id: user._id ?? "" })).data;
   goto(`/report/${reportId}`, { replaceState: false, invalidateAll: true });
 };
-const previewMapper = (input) => {
+const previewMapper = (input: SearchUser[]) => {
   return input.map((user) => {
-    let userEmoji;
-    if (["Elev", "Lærling"].includes(user.jobTitle)) userEmoji = "🎓";
-    else if ([null].includes(user.title)) userEmoji = "🤷‍♂️";
+    let userEmoji: string;
+    if (user.jobTitle && ["Elev", "Lærling"].includes(user.jobTitle)) userEmoji = "🎓";
+    else if (user.title === null) userEmoji = "🤷‍♂️";
     else userEmoji = "🤓";
     const secondUsername = user.samAccountName
       ? user.samAccountName
@@ -25,9 +33,9 @@ const previewMapper = (input) => {
         ? user.feidenavn.substring(0, user.feidenavn.indexOf("@"))
         : "???";
     return {
-      first: user.displayName,
+      first: user.displayName ?? null,
       second: `${userEmoji} ${secondUsername} (${user.userType})`,
-      third: user.companyName,
+      third: user.companyName ?? null,
       onClick: async () => {
         await createNewReport(user);
       }

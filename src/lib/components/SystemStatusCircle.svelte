@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { isChristmas, isEaster } from "../helpers/holidays.js";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 

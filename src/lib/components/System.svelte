@@ -1,32 +1,38 @@
-<script>
+<script lang="ts">
 import HighlightJson from "./HighlightJson.svelte";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 import SystemStatusCircle from "./SystemStatusCircle.svelte";
 import Test from "./Test.svelte";
 
-export let system;
+type SystemTest = { title: string; result?: { status?: string | null } };
+type SystemType = {
+  name: string;
+  tests: SystemTest[];
+  finishedTimestamp?: string | null;
+  data?: { getDataFailed?: boolean; customMessage?: string } & Record<string, unknown>;
+};
+
+export let system: SystemType;
 let systemStatus = "loading";
 let warnings = 0;
 let errors = 0;
 
 let collapsed = true;
-let dataModal;
+let dataModal: HTMLDialogElement;
 
-const getSystemStatus = (tests, getSystemDataFailed) => {
+const getSystemStatus = (tests: SystemTest[], getSystemDataFailed: boolean | undefined) => {
   if (getSystemDataFailed) {
     return { systemStatus: "dead", warnings: 0, errors: 0 };
   }
   const running = tests.filter((test) => !test.result).length;
-  const warnings = tests.filter((test) => test.result?.status === "warning").length;
-  const errors = tests.filter((test) => test.result?.status === "error").length;
-  if (running > 0) {
-    systemStatus = "loading";
-  } else if (errors > 0) {
-    systemStatus = "error";
-  } else if (warnings > 0) {
-    systemStatus = "warn";
-  } else systemStatus = "ok";
-  return { systemStatus, warnings, errors };
+  const warningCount = tests.filter((test) => test.result?.status === "warning").length;
+  const errorCount = tests.filter((test) => test.result?.status === "error").length;
+  let status: string;
+  if (running > 0) status = "loading";
+  else if (errorCount > 0) status = "error";
+  else if (warningCount > 0) status = "warn";
+  else status = "ok";
+  return { systemStatus: status, warnings: warningCount, errors: errorCount };
 };
 $: {
   let status = getSystemStatus(system.tests || [], system.data?.getDataFailed);
@@ -79,7 +85,7 @@ $: {
                             <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
                         </div>
                         <div class="rawData">
-                            <HighlightJson json={system.data} />
+                            <HighlightJson json={(system.data ?? null) as Record<string, unknown> | null} />
                         </div>
                     </form>
                 </dialog>

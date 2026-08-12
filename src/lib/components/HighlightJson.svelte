@@ -1,5 +1,5 @@
-<script>
-export let json = {
+<script lang="ts">
+export let json: Record<string, unknown> | unknown[] | null = {
   hei: "tuttut",
   hade: false,
   obj: { hallllla: "oi", balla: true, etarray: ["mimimi", { oioio: 23 }] },
@@ -16,8 +16,7 @@ const tab = "&nbsp;&nbsp;";
 const tabs = tab.repeat(level);
 const rootTabs = tab.repeat(level - 1);
 
-const tabSpaces = 2;
-const keys = json ? Object.keys(json) : null;
+const keys: string[] = json ? Object.keys(json) : [];
 </script>
 
 {#if open}

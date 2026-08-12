@@ -1,20 +1,34 @@
-<script>
+<script lang="ts">
 import { onMount } from "svelte";
 import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
 import { page } from "$app/stores";
-import { getReport } from "$lib/useApi";
+import { getReport } from "$lib/useApi.js";
 import IconSpinner from "../../../lib/components/Icons/IconSpinner.svelte";
 import PersonCard from "../../../lib/components/PersonCard.svelte";
 import System from "../../../lib/components/System.svelte";
 
-let reportData;
-let statusCode;
-let interval;
-let intervals = [];
+type ReportSystem = {
+  name: string;
+  runtime: number;
+  tests: { title: string; result?: { status?: string | null } }[];
+  finishedTimestamp?: string | null;
+  data?: { getDataFailed?: boolean; customMessage?: string } & Record<string, unknown>;
+};
+type ReportData = {
+  user: Record<string, unknown> & { displayName: string };
+  systems?: ReportSystem[];
+  runtimeAlert?: boolean;
+  totalRuntime?: number;
+};
+
+let reportData: ReportData | undefined;
+let statusCode: number | undefined;
+let interval: ReturnType<typeof setInterval> | undefined;
+let intervals: ReturnType<typeof setInterval>[] = [];
 
 const retryAfter = 2000;
 
-const alertRuntimeMs = import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000;
+const alertRuntimeMs = Number(import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000);
 
 // Runtime stuff
 let startTime = new Date();
@@ -30,7 +44,7 @@ onMount(() => {
   };
 });
 
-$: runtime = time - startTime;
+$: runtime = time.getTime() - startTime.getTime();
 
 // Quick fix - just navigate to the same page to get afterNavigate to run
 onMount(() => {
@@ -42,25 +56,21 @@ afterNavigate(() => {
   // reset timer
   startTime = new Date();
   const fetchReportData = async () => {
-    const { status, data } = await getReport($page.params.reportId);
-    reportData = data;
+    const reportId = $page.params.reportId;
+    if (!reportId) return;
+    const { status, data } = await getReport(reportId);
+    reportData = data as ReportData;
     statusCode = status;
     if (status === 200) {
-      // console.log('Status 200 da stopper vi interval')
       clearInterval(interval);
       for (const inter of intervals) {
         clearInterval(inter);
       }
-    } else if (status === 202) {
-      // console.log('Status 202, da fortsetter vi interval')
     } else if (status === 500) {
-      // console.log('Status 500, da stopper vi interval')
       clearInterval(interval);
       for (const inter of intervals) {
         clearInterval(inter);
       }
-    } else {
-      // console.log('status noe annet, what??')
     }
   };
 
@@ -68,7 +78,7 @@ afterNavigate(() => {
   intervals.push(interval);
   fetchReportData();
 
-  return null;
+  return;
 });
 
 // Kjøres før vi navigerer vekk fra siden
@@ -77,14 +87,13 @@ beforeNavigate(() => {
   for (const inter of intervals) {
     clearInterval(inter);
   }
-  // console.log('Navigated nå')
 });
 
-function getSystemsWithLongRuntime(report) {
-  return report.systems
+const getSystemsWithLongRuntime = (report: ReportData) => {
+  return (report.systems ?? [])
     .filter((s) => s.runtime > alertRuntimeMs)
     .map((s) => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }));
-}
+};
 </script>
 
 {#if !reportData}

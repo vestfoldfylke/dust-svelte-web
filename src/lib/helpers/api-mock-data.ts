@@ -309,7 +309,7 @@ export const finishedReport = {
   ]
 };
 
-export const generateMockReport = (inProgress) => {
+export const generateMockReport = (inProgress: boolean) => {
   return {
     _id: "65c21b1c9b3bf74aca6db437",
     instanceId: "2b65dd13-d5ea-44f4-81d2-076c2ced45fd",

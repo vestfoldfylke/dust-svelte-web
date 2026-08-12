@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import "../app.css"; // Add global css (and make it hot reload)
 import { onMount } from "svelte";
 import { goto } from "$app/navigation";
@@ -11,8 +11,10 @@ import DusteSearchBar from "../lib/components/DusteSearchBar.svelte";
 import IconSpinner from "../lib/components/Icons/IconSpinner.svelte";
 import { isChristmas, isEaster } from "../lib/helpers/holidays.js";
 
-let account = null;
-let currentPage = $page.url.pathname;
+type Account = { name?: string; username?: string } | null;
+
+let account: Account = null;
+const currentPage = $page.url.pathname;
 console.log("Rett på: ", currentPage);
 console.log("Fra window: ", window.location.href);
 
@@ -26,6 +28,7 @@ onMount(() => {
     }
     if (!account) {
       const loginResponse = await login(false, $page.url.pathname); // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+      if (!loginResponse) return;
       account = loginResponse.account;
       if ($page.url.pathname !== loginResponse.loginRequestUrl) {
         goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true });

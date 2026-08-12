@@ -1,11 +1,30 @@
-<script>
+<script lang="ts">
 import Confetti from "svelte-confetti";
 
 import InitialsBadge from "./InitialsBadge.svelte";
 
-export let user;
+type ReportUser = {
+  displayName: string;
+  userPrincipalName?: string;
+  samAccountName?: string;
+  feidenavn?: string;
+  companyName?: string;
+  jobTitle?: string;
+  employeeNumber?: string;
+  extraCaution?: boolean;
+};
 
-const getInitialsFromName = (reportUser) => {
+export let user: ReportUser;
+
+const hasBirthdayToday = (reportUser: ReportUser): boolean => {
+  const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
+  const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
+  const today = new Date();
+
+  return date === today.getDate() && month === today.getMonth() + 1;
+};
+
+const getInitialsFromName = (reportUser: ReportUser): string => {
   if (hasBirthdayToday(reportUser)) {
     return "🥳";
   }
@@ -14,16 +33,8 @@ const getInitialsFromName = (reportUser) => {
   return `${reportUser.displayName.substring(0, 1)} ${reportUser.displayName.substring(lastSpaceIndex + 1, lastSpaceIndex + 2)}`;
 };
 
-const hasBirthdayToday = (reportUser) => {
-  const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
-  const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
-  const today = new Date();
-
-  return date === today.getDate() && month === today.getMonth() + 1;
-};
-
-const numberOfConfetti = (reportUser) => {
-  const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? `0`);
+const numberOfConfetti = (reportUser: ReportUser): number => {
+  const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? "0");
 
   const today = new Date();
   const currentYear = today.getFullYear() % 100; // Get last two digits of current year
@@ -50,7 +61,7 @@ const numberOfConfetti = (reportUser) => {
             </h3>
 
             {#if hasBirthdayToday(user)}
-                <Confetti iterationCount=10 amount={numberOfConfetti(user)} duration=2500 delay={[0, 1000]} x={[0,4]} />
+                <Confetti iterationCount={10} amount={numberOfConfetti(user)} duration={2500} delay={[0, 1000]} x={[0,4]} />
             {/if}
 
             <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samaccount ? feidenavn??')}</p>
