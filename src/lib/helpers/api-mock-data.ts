@@ -1,4 +1,31 @@
-export const users = [
+type MockUser = {
+  _id: string;
+  userPrincipalName: string;
+  samAccountName: string;
+  givenName: string;
+  userType: string;
+  surName: string;
+  displayName: string;
+  domain: string;
+  enabled: boolean;
+  countyOU: string;
+  ou: string;
+  extensionAttribute7: string | null;
+  extensionAttribute9: string | null;
+  extensionAttribute14: string | null;
+  departmentShort: string | null;
+  departmentAdditional: string | null;
+  office: string;
+  company?: string;
+  companyName?: string;
+  title?: string;
+  jobTitle?: string;
+  state: string;
+  feide: boolean;
+  extraCaution?: boolean;
+};
+
+export const users: MockUser[] = [
   {
     _id: "1",
     userPrincipalName: "per.son@fylke.no",
@@ -70,7 +97,7 @@ export const users = [
   }
 ];
 
-export const finishedReport = {
+export const finishedReport: Record<string, unknown> = {
   _id: "65c21b1c9b3bf74aca6db437",
   instanceId: "2b65dd13-d5ea-44f4-81d2-076c2ced45fd",
   startedTimestamp: "2024-02-06T11:42:20.898Z",
@@ -309,7 +336,7 @@ export const finishedReport = {
   ]
 };
 
-export const generateMockReport = (inProgress: boolean) => {
+export const generateMockReport = (inProgress: boolean): Record<string, unknown> => {
   return {
     _id: "65c21b1c9b3bf74aca6db437",
     instanceId: "2b65dd13-d5ea-44f4-81d2-076c2ced45fd",
@@ -562,4 +589,4 @@ export const generateMockReport = (inProgress: boolean) => {
   };
 };
 
-export const reportId = "bareTullOgFjas";
+export const reportId: string = "bareTullOgFjas";

@@ -3,32 +3,41 @@ import "../app.css"; // Add global css (and make it hot reload)
 import { onMount } from "svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
+import type { IPublicClientApplication } from "@azure/msal-browser";
 import christmasDust from "$lib/assets/christmas-dust.png";
 import easterDust from "$lib/assets/easter-dust.png";
 import logo from "$lib/assets/vfk_logo.png";
+import type { LoginResponse } from "$lib/types/auth";
 import { getMsalClient, login, logout } from "../lib/auth/msal-auth.js";
 import DusteSearchBar from "../lib/components/DusteSearchBar.svelte";
 import IconSpinner from "../lib/components/Icons/IconSpinner.svelte";
 import { isChristmas, isEaster } from "../lib/helpers/holidays.js";
 
-type Account = { name?: string; username?: string } | null;
+type Account = {
+  name?: string;
+  username?: string;
+} | null;
 
 let account: Account = null;
-const currentPage = $page.url.pathname;
+const currentPage: string = $page.url.pathname;
 console.log("Rett på: ", currentPage);
 console.log("Fra window: ", window.location.href);
 
-const appTitle = "D.U.S.T";
+const appTitle: string = "D.U.S.T";
 
-onMount(() => {
-  const authenticate = async () => {
-    const msalClient = await getMsalClient();
+onMount((): (() => void) => {
+  const authenticate = async (): Promise<void> => {
+    const msalClient: IPublicClientApplication = await getMsalClient();
     if (msalClient.getActiveAccount()) {
       account = msalClient.getActiveAccount();
     }
+
     if (!account) {
-      const loginResponse = await login(false, $page.url.pathname); // Sends you to ms auth, and redirects you back here with the msalClient set with active account
-      if (!loginResponse) return;
+      const loginResponse: LoginResponse | undefined = await login(false, $page.url.pathname); // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+      if (!loginResponse) {
+        return;
+      }
+
       account = loginResponse.account;
       if ($page.url.pathname !== loginResponse.loginRequestUrl) {
         goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true });
@@ -38,7 +47,7 @@ onMount(() => {
 
   authenticate();
 
-  return () => {
+  return (): void => {
     console.log("Destroyyyy");
     // on destroy (probs just wipe state)
   };

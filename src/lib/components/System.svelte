@@ -4,47 +4,66 @@ import IconSpinner from "./Icons/IconSpinner.svelte";
 import SystemStatusCircle from "./SystemStatusCircle.svelte";
 import Test from "./Test.svelte";
 
-type SystemTest = { title: string; result?: { status?: string | null } };
+type SystemTest = {
+  title: string;
+  result?: {
+    status?: string | null;
+  };
+};
+
 type SystemType = {
   name: string;
   tests: SystemTest[];
   finishedTimestamp?: string | null;
-  data?: { getDataFailed?: boolean; customMessage?: string } & Record<string, unknown>;
+  data?: {
+    getDataFailed?: boolean;
+    customMessage?: string;
+  } & Record<string, unknown>;
+};
+
+type SystemStatusResult = {
+  systemStatus: string;
+  warnings: number;
+  errors: number;
 };
 
 export let system: SystemType;
-let systemStatus = "loading";
-let warnings = 0;
-let errors = 0;
 
-let collapsed = true;
+let systemStatus: string = "loading";
+let warnings: number = 0;
+let errors: number = 0;
+let collapsed: boolean = true;
 let dataModal: HTMLDialogElement;
 
-const getSystemStatus = (tests: SystemTest[], getSystemDataFailed: boolean | undefined) => {
+const getSystemStatus = (tests: SystemTest[], getSystemDataFailed: boolean | undefined): SystemStatusResult => {
   if (getSystemDataFailed) {
     return { systemStatus: "dead", warnings: 0, errors: 0 };
   }
-  const running = tests.filter((test) => !test.result).length;
-  const warningCount = tests.filter((test) => test.result?.status === "warning").length;
-  const errorCount = tests.filter((test) => test.result?.status === "error").length;
+
+  const running: number = tests.filter((test: SystemTest): boolean => !test.result).length;
+  const warningCount: number = tests.filter((test: SystemTest): boolean => test.result?.status === "warning").length;
+  const errorCount: number = tests.filter((test: SystemTest): boolean => test.result?.status === "error").length;
+
   let status: string;
-  if (running > 0) status = "loading";
-  else if (errorCount > 0) status = "error";
-  else if (warningCount > 0) status = "warn";
-  else status = "ok";
+  if (running > 0) {
+    status = "loading";
+  } else if (errorCount > 0) {
+    status = "error";
+  } else if (warningCount > 0) {
+    status = "warn";
+  } else {
+    status = "ok";
+  }
+
   return { systemStatus: status, warnings: warningCount, errors: errorCount };
 };
+
 $: {
-  let status = getSystemStatus(system.tests || [], system.data?.getDataFailed);
+  const status: SystemStatusResult = getSystemStatus(system.tests || [], system.data?.getDataFailed);
   systemStatus = status.systemStatus;
   warnings = status.warnings;
   errors = status.errors;
 }
-/*
-    $: {
-        collapsed = system.finishedTimestamp && systemStatus === "ok"
-    }
-    */
 </script>
 
 <div class="system{!collapsed ? ' open' : ''}">

@@ -2,6 +2,7 @@
 import { onMount } from "svelte";
 import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
 import { page } from "$app/stores";
+import type { ApiResponse } from "$lib/types/api";
 import { getReport } from "$lib/useApi.js";
 import IconSpinner from "../../../lib/components/Icons/IconSpinner.svelte";
 import PersonCard from "../../../lib/components/PersonCard.svelte";
@@ -10,10 +11,19 @@ import System from "../../../lib/components/System.svelte";
 type ReportSystem = {
   name: string;
   runtime: number;
-  tests: { title: string; result?: { status?: string | null } }[];
+  tests: {
+    title: string;
+    result?: {
+      status?: string | null;
+    };
+  }[];
   finishedTimestamp?: string | null;
-  data?: { getDataFailed?: boolean; customMessage?: string } & Record<string, unknown>;
+  data?: {
+    getDataFailed?: boolean;
+    customMessage?: string;
+  } & Record<string, unknown>;
 };
+
 type ReportData = {
   user: Record<string, unknown> & { displayName: string };
   systems?: ReportSystem[];
@@ -21,25 +31,31 @@ type ReportData = {
   totalRuntime?: number;
 };
 
+type OverLimitSystem = {
+  name: string;
+  loweredName: string;
+  runtime: number;
+};
+
 let reportData: ReportData | undefined;
 let statusCode: number | undefined;
 let interval: ReturnType<typeof setInterval> | undefined;
 let intervals: ReturnType<typeof setInterval>[] = [];
 
-const retryAfter = 2000;
+const retryAfter: number = 2000;
 
-const alertRuntimeMs = Number(import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000);
+const alertRuntimeMs: number = Number(import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000);
 
 // Runtime stuff
-let startTime = new Date();
-let time = new Date();
+let startTime: Date = new Date();
+let time: Date = new Date();
 
-onMount(() => {
-  const timeInterval = setInterval(() => {
+onMount((): (() => void) => {
+  const timeInterval: ReturnType<typeof setInterval> = setInterval((): void => {
     time = new Date();
   }, 100);
 
-  return () => {
+  return (): void => {
     clearInterval(timeInterval);
   };
 });
@@ -47,26 +63,25 @@ onMount(() => {
 $: runtime = time.getTime() - startTime.getTime();
 
 // Quick fix - just navigate to the same page to get afterNavigate to run
-onMount(() => {
+onMount((): void => {
   goto(`/report/${$page.params.reportId}`, { replaceState: false });
 });
 
 // Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
-afterNavigate(() => {
+afterNavigate((): void => {
   // reset timer
   startTime = new Date();
-  const fetchReportData = async () => {
-    const reportId = $page.params.reportId;
-    if (!reportId) return;
-    const { status, data } = await getReport(reportId);
-    reportData = data as ReportData;
-    statusCode = status;
-    if (status === 200) {
-      clearInterval(interval);
-      for (const inter of intervals) {
-        clearInterval(inter);
-      }
-    } else if (status === 500) {
+  const fetchReportData = async (): Promise<void> => {
+    const reportId: string | undefined = $page.params.reportId;
+    if (!reportId) {
+      return;
+    }
+
+    const response: ApiResponse = await getReport(reportId);
+    reportData = response.data as ReportData;
+    statusCode = response.status;
+
+    if (response.status === 200 || response.status === 500) {
       clearInterval(interval);
       for (const inter of intervals) {
         clearInterval(inter);
@@ -77,22 +92,20 @@ afterNavigate(() => {
   interval = setInterval(fetchReportData, retryAfter);
   intervals.push(interval);
   fetchReportData();
-
-  return;
 });
 
 // Kjøres før vi navigerer vekk fra siden
-beforeNavigate(() => {
+beforeNavigate((): void => {
   clearInterval(interval); // Fjern kjøring av interval når det navigeres vekk fra sluggen / sida
   for (const inter of intervals) {
     clearInterval(inter);
   }
 });
 
-const getSystemsWithLongRuntime = (report: ReportData) => {
+const getSystemsWithLongRuntime = (report: ReportData): OverLimitSystem[] => {
   return (report.systems ?? [])
-    .filter((s) => s.runtime > alertRuntimeMs)
-    .map((s) => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }));
+    .filter((s: ReportSystem): boolean => s.runtime > alertRuntimeMs)
+    .map((s: ReportSystem): OverLimitSystem => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }));
 };
 </script>
 

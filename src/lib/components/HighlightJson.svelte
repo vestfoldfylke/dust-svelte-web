@@ -7,14 +7,18 @@ export let json: Record<string, unknown> | unknown[] | null = {
   sistemann: "tuitui",
   jijiji: null
 };
-export let open = true;
-export let level = 1;
-export let isLastKey = true;
-export let rootPropName = "";
 
-const tab = "&nbsp;&nbsp;";
-const tabs = tab.repeat(level);
-const rootTabs = tab.repeat(level - 1);
+export let open: boolean = true;
+
+export let level: number = 1;
+
+export let isLastKey: boolean = true;
+
+export let rootPropName: string = "";
+
+const tab: string = "&nbsp;&nbsp;";
+const tabs: string = tab.repeat(level);
+const rootTabs: string = tab.repeat(level - 1);
 
 const keys: string[] = json ? Object.keys(json) : [];
 </script>
@@ -24,6 +28,7 @@ const keys: string[] = json ? Object.keys(json) : [];
     Ingen data
   {:else}
     {@html rootTabs}<button class="expandable" on:click={() => {open = !open}}>{Array.isArray(json) ? `${rootPropName}[` : `${rootPropName}{`}</button>
+
     {#each Object.entries(json) as keyval}
       <span class="line">
         <br>
@@ -41,6 +46,7 @@ const keys: string[] = json ? Object.keys(json) : [];
         {/if}
       </span>
     {/each}
+
     <br>
     <span class="closing-tag">{@html rootTabs}{Array.isArray(json) ? ']' : '}'}{!isLastKey ? ',' : ''}</span>
   {/if}

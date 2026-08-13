@@ -1,7 +1,11 @@
 <script lang="ts">
-export let initials = "? ?";
-export let size = "small";
-export let color = "himmel-30";
+export let initials: string = "? ?";
+
+export let size: "xSmall" | "small" | "medium" | "large" = "small";
+
+/** Check app.css#COLORS for all the available colors */
+export let color: string = "himmel-30";
+
 export let image: string | undefined = undefined;
 </script>
 

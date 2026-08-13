@@ -1,6 +1,5 @@
 <script lang="ts">
 import Confetti from "svelte-confetti";
-
 import InitialsBadge from "./InitialsBadge.svelte";
 
 type ReportUser = {
@@ -17,9 +16,9 @@ type ReportUser = {
 export let user: ReportUser;
 
 const hasBirthdayToday = (reportUser: ReportUser): boolean => {
-  const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
-  const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
-  const today = new Date();
+  const date: number = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
+  const month: number = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
+  const today: Date = new Date();
 
   return date === today.getDate() && month === today.getMonth() + 1;
 };
@@ -29,15 +28,16 @@ const getInitialsFromName = (reportUser: ReportUser): string => {
     return "🥳";
   }
 
-  const lastSpaceIndex = reportUser.displayName.lastIndexOf(" ");
+  const lastSpaceIndex: number = reportUser.displayName.lastIndexOf(" ");
+
   return `${reportUser.displayName.substring(0, 1)} ${reportUser.displayName.substring(lastSpaceIndex + 1, lastSpaceIndex + 2)}`;
 };
 
 const numberOfConfetti = (reportUser: ReportUser): number => {
-  const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? "0");
+  const userYear: number = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? "0");
 
-  const today = new Date();
-  const currentYear = today.getFullYear() % 100; // Get last two digits of current year
+  const today: Date = new Date();
+  const currentYear: number = today.getFullYear() % 100; // Get last two digits of current year
 
   // If userYear is greater than currentYear, it means the user was born in the previous century
   return userYear > currentYear ? 100 - userYear + currentYear : currentYear - userYear;

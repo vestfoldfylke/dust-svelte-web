@@ -14,29 +14,47 @@ type SearchUser = Record<string, unknown> & {
   companyName?: string;
 };
 
-const searchFunc = async (query: string): Promise<SearchUser[]> => {
-  return ((await userSearch(query)).data ?? []) as SearchUser[];
+type PreviewMapping = {
+  first: string | null;
+  second: string;
+  third: string | null;
+  onClick: () => Promise<void>;
 };
+
+const searchFunc = async (query: string): Promise<SearchUser[]> => {
+  return ((await userSearch(query))?.data ?? []) as SearchUser[];
+};
+
 const createNewReport = async (user: SearchUser): Promise<void> => {
-  const reportId = (await createReport({ _id: user._id ?? "" })).data;
+  const reportId: unknown = (await createReport({ _id: user._id ?? "" }))?.data;
   goto(`/report/${reportId}`, { replaceState: false, invalidateAll: true });
 };
-const previewMapper = (input: SearchUser[]) => {
-  return input.map((user) => {
+
+const previewMapper = (input: SearchUser[]): PreviewMapping[] => {
+  return input.map((user: SearchUser): PreviewMapping => {
     let userEmoji: string;
-    if (user.jobTitle && ["Elev", "Lærling"].includes(user.jobTitle)) userEmoji = "🎓";
-    else if (user.title === null) userEmoji = "🤷‍♂️";
-    else userEmoji = "🤓";
-    const secondUsername = user.samAccountName
-      ? user.samAccountName
-      : user.feidenavn
-        ? user.feidenavn.substring(0, user.feidenavn.indexOf("@"))
-        : "???";
+    if (user.jobTitle && ["Elev", "Lærling"].includes(user.jobTitle)) {
+      userEmoji = "🎓";
+    } else if (user.title === null) {
+      userEmoji = "🤷‍♂️";
+    } else {
+      userEmoji = "🤓";
+    }
+
+    let secondUsername: string;
+    if (user.samAccountName) {
+      secondUsername = user.samAccountName;
+    } else if (user.feidenavn) {
+      secondUsername = user.feidenavn.substring(0, user.feidenavn.indexOf("@"));
+    } else {
+      secondUsername = "???";
+    }
+
     return {
       first: user.displayName ?? null,
       second: `${userEmoji} ${secondUsername} (${user.userType})`,
       third: user.companyName ?? null,
-      onClick: async () => {
+      onClick: async (): Promise<void> => {
         await createNewReport(user);
       }
     };

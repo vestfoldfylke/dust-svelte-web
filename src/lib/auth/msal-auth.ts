@@ -1,4 +1,11 @@
-import { type AccountInfo, type Configuration, type IPublicClientApplication, PublicClientApplication } from "@azure/msal-browser";
+import {
+  type AccountInfo,
+  type AuthenticationResult,
+  type Configuration,
+  type IPublicClientApplication,
+  PublicClientApplication
+} from "@azure/msal-browser";
+import type { LoginResponse } from "$lib/types/auth";
 
 const msalConfig: Configuration = {
   auth: {
@@ -16,51 +23,74 @@ const msalConfig: Configuration = {
 let msalClient: IPublicClientApplication | null = null;
 
 export const getMsalClient = async (): Promise<IPublicClientApplication> => {
-  if (!msalClient) msalClient = await PublicClientApplication.createPublicClientApplication(msalConfig);
-  const client = msalClient;
-  if (client.getActiveAccount()) return client;
-  const accounts = client.getAllAccounts();
+  if (!msalClient) {
+    msalClient = await PublicClientApplication.createPublicClientApplication(msalConfig);
+  }
+
+  const client: IPublicClientApplication = msalClient;
+  if (client.getActiveAccount()) {
+    return client;
+  }
+
+  const accounts: AccountInfo[] = client.getAllAccounts();
+
   if (accounts.length === 1 && accounts[0]) {
     client.setActiveAccount(accounts[0]);
     return client;
   }
+
   if (accounts.length > 1 && accounts[0]) {
     console.log("WOAHWOAHWOAH, flere enn en active bruker i MSAL HER! Åpne en ny fane a...");
     client.setActiveAccount(accounts[0]);
   }
+
   return client;
 };
 
-export type LoginResponse = {
-  account: AccountInfo | Partial<AccountInfo>;
-  loginRequestUrl: string;
-};
-
-export const login = async (forceLogin = false, loginRequestUrl = "/"): Promise<LoginResponse | undefined> => {
+export const login = async (forceLogin: boolean = false, loginRequestUrl: string = "/"): Promise<LoginResponse | undefined> => {
   if (import.meta.env.VITE_MOCK_MSAL === "true") {
-    return { account: { username: "demospøkelse@domene.no", name: "Demo Spøkelse" }, loginRequestUrl };
+    return {
+      account: {
+        username: "demospøkelse@domene.no",
+        name: "Demo Spøkelse"
+      },
+      loginRequestUrl
+    };
   }
-  const client = await getMsalClient();
 
-  const loginResponse = await client.handleRedirectPromise();
+  const client: IPublicClientApplication = await getMsalClient();
+
+  const loginResponse: AuthenticationResult | null = await client.handleRedirectPromise();
 
   if (loginResponse && !forceLogin) {
     client.setActiveAccount(loginResponse.account);
-    return { account: loginResponse.account, loginRequestUrl: loginResponse.state ?? loginRequestUrl };
+    return {
+      account: loginResponse.account,
+      loginRequestUrl: loginResponse.state ?? loginRequestUrl
+    };
   }
-  const activeAccount = client.getActiveAccount();
+
+  const activeAccount: AccountInfo | null = client.getActiveAccount();
   if (activeAccount && !forceLogin) {
-    return { account: activeAccount, loginRequestUrl };
+    return {
+      account: activeAccount,
+      loginRequestUrl
+    };
   }
+
   client.loginRedirect({ scopes: ["User.Read"], state: loginRequestUrl });
+
   return undefined;
 };
 
 export const logout = async (): Promise<null | undefined> => {
-  const client = await getMsalClient();
-  const currentAccounts = client.getAllAccounts();
-  const currentAccount = currentAccounts[0];
-  if (!currentAccount) return null;
+  const client: IPublicClientApplication = await getMsalClient();
+  const currentAccounts: AccountInfo[] = client.getAllAccounts();
+  const currentAccount: AccountInfo | undefined = currentAccounts[0];
+  if (!currentAccount) {
+    return null;
+  }
+
   await client.logoutRedirect({
     account: currentAccount,
     postLogoutRedirectUri: import.meta.env.VITE_LOGOUT_URI

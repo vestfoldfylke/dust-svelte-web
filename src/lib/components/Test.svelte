@@ -16,13 +16,23 @@ type TestType = {
 };
 
 export let test: TestType;
+
 let dataModal: HTMLDialogElement;
 let solutionModal: HTMLDialogElement;
 
 const norwegianStatus = (status: string | null | undefined): string => {
-  if (status === "ok") return "OK";
-  if (status === "warning") return "Advarsel";
-  if (status === "error") return "Feil";
+  if (status === "ok") {
+    return "OK";
+  }
+
+  if (status === "warning") {
+    return "Advarsel";
+  }
+
+  if (status === "error") {
+    return "Feil";
+  }
+
   return "";
 };
 </script>

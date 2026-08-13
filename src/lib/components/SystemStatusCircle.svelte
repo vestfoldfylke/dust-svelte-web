@@ -2,9 +2,9 @@
 import { isChristmas, isEaster } from "../helpers/holidays.js";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 
-export let systemStatus = "loading";
-export let warnings = 0;
-export let errors = 0;
+export let systemStatus: string = "loading";
+export let warnings: number = 0;
+export let errors: number = 0;
 </script>
 
 <div class="systemStatus">

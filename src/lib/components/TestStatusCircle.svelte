@@ -1,7 +1,11 @@
 <script lang="ts">
 import IconSpinner from "./Icons/IconSpinner.svelte";
 
-type TestProp = { result?: { status?: string | null } };
+type TestProp = {
+  result?: {
+    status?: string | null;
+  };
+};
 
 export let test: TestProp = { result: { status: null } };
 </script>

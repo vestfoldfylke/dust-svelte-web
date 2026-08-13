@@ -4,7 +4,14 @@ import IconClose from "./Icons/IconClear.svelte";
 import IconSearch from "./Icons/IconSearch.svelte";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 
-type SearchInput = Record<string, unknown> & { fyrste?: string; andre?: string; nested?: { tredje?: string } };
+type SearchInput = Record<string, unknown> & {
+  fyrste?: string;
+  andre?: string;
+  nested?: {
+    tredje?: string
+  }
+};
+
 type PreviewItem = {
   first?: string | null;
   firstImage?: string | null;
@@ -16,16 +23,25 @@ type PreviewItem = {
 };
 
 // props
-export let searchValue = "";
-export let placeholder = "Søk her";
-export let rounded = false;
-export let textInputStyle = false;
-export let debounceMs = 1000;
-export let showClear = true;
-export let showPreview = false;
-export let showSearch = true;
-export let showSelected = false;
-export let search: (query: string) => Promise<SearchInput[]> = async (_query) => {
+export let searchValue: string = "";
+
+export let placeholder: string = "Søk her";
+
+export let rounded: boolean = false;
+
+export let textInputStyle: boolean = false;
+
+export let debounceMs: number = 1000;
+
+export let showClear: boolean = true;
+
+export let showPreview: boolean = false;
+
+export let showSearch: boolean = true;
+
+export let showSelected: boolean = false;
+
+export let search: (query: string) => Promise<SearchInput[]> = async (_query: string): Promise<SearchInput[]> => {
   return [
     { fyrste: "hei på deg", andre: "oh oh" },
     { fyrste: "tut tut" },
@@ -36,16 +52,18 @@ export let search: (query: string) => Promise<SearchInput[]> = async (_query) =>
     { fyrste: "tut tut" }
   ];
 };
-export let callback: (searchRes: SearchInput[]) => void = (_searchRes) => {
+
+export let callback: (searchRes: SearchInput[]) => void = (_searchRes: SearchInput[]): void => {
   // console.log('callback')
 };
-export let previewMapper: (input: SearchInput[]) => PreviewItem[] = (input) => {
-  return input.map((ele) => {
+
+export let previewMapper: (input: SearchInput[]) => PreviewItem[] = (input: SearchInput[]): PreviewItem[] => {
+  return input.map((ele: SearchInput): PreviewItem => {
     return {
       first: ele.fyrste ?? null,
       second: ele.andre ?? null,
       third: ele.nested?.tredje ?? null,
-      onClick: () => {
+      onClick: (): void => {
         console.log(`jeg trykket på ${ele.fyrste}`);
       }
     };
@@ -53,40 +71,48 @@ export let previewMapper: (input: SearchInput[]) => PreviewItem[] = (input) => {
 };
 
 // state
-let focusing = false;
+let focusing: boolean = false;
 let previewData: PreviewItem[] = [];
 let searchError: string | null = null;
-let isSearching = false;
+let isSearching: boolean = false;
 let timeout: ReturnType<typeof setTimeout> | null = null;
 
 // functions
-const clear = () => {
+const clear = (): void => {
   if (timeout) {
     clearTimeout(timeout);
     timeout = null;
   }
+
   isSearching = false;
   previewData = [];
   searchError = null;
 };
-const clearSearch = () => {
+
+const clearSearch = (): void => {
   clear();
   searchValue = "";
 };
 
-const changeActivePreviewItem = (dir: "up" | "down") => {
-  if (previewData.length < 2) return;
-  const currIndex = previewData.findIndex((ele) => ele.active);
-  const current = previewData[currIndex];
-  if (!current) return;
+const changeActivePreviewItem = (dir: "up" | "down"): void => {
+  if (previewData.length < 2) {
+    return;
+  }
+
+  const currIndex: number = previewData.findIndex((ele: PreviewItem): boolean => ele.active === true);
+  const current: PreviewItem | undefined = previewData[currIndex];
+  if (!current) {
+    return;
+  }
+
   if (dir === "up") {
-    const prev = previewData[currIndex - 1];
+    const prev: PreviewItem | undefined = previewData[currIndex - 1];
     if (currIndex > 0 && prev) {
       current.active = false;
       prev.active = true;
     }
   } else if (dir === "down") {
-    const next = previewData[currIndex + 1];
+    const next: PreviewItem | undefined = previewData[currIndex + 1];
     if (currIndex < previewData.length - 1 && next) {
       current.active = false;
       next.active = true;
@@ -96,30 +122,38 @@ const changeActivePreviewItem = (dir: "up" | "down") => {
 
 // LOLs
 const mapPreviewMapper = (mappedPreview: PreviewItem[]): PreviewItem[] => {
-  return mappedPreview.map((item, i) => {
+  return mappedPreview.map((item: PreviewItem, i: number): PreviewItem => {
     return {
       ...item,
       active: i === 0,
       id: `previewItem-${i}`,
-      onClick: () => {
+      onClick: (): void => {
         item.onClick();
-        if (!showSelected) clearSearch();
-        else {
-          searchValue = item.first ?? "";
-          clear();
+        if (!showSelected) {
+          clearSearch();
+          return;
         }
+
+        searchValue = item.first ?? "";
+        clear();
       }
     };
   });
 };
 
-const onFocus = () => {
-  if (!focusing) focusing = true;
+const onFocus = (): void => {
+  if (!focusing) {
+    focusing = true;
+  }
 };
-const onBlur = () => {
-  if (focusing) focusing = false;
+
+const onBlur = (): void => {
+  if (focusing) {
+    focusing = false;
+  }
 };
-const onKeydown = (e: KeyboardEvent) => {
+
+const onKeydown = (e: KeyboardEvent): void => {
   if (focusing && previewData && previewData.length > 0) {
     if (e.key === "ArrowUp") {
       changeActivePreviewItem("up");
@@ -131,10 +165,11 @@ const onKeydown = (e: KeyboardEvent) => {
       clear();
       e.preventDefault();
     } else if (e.key === "Enter") {
-      previewData.find((ele) => ele.active)?.onClick();
+      previewData.find((ele: PreviewItem): boolean => ele.active === true)?.onClick();
       e.preventDefault();
     }
   }
+
   if (focusing) {
     if (e.key === "Escape") {
       clear();
@@ -143,35 +178,46 @@ const onKeydown = (e: KeyboardEvent) => {
   }
 };
 
-const searchFunc = async () => {
+const searchFunc = async (): Promise<void> => {
   try {
-    const res = await search(searchValue);
+    const res: SearchInput[] = await search(searchValue);
     isSearching = false;
+
     if (!Array.isArray(res)) {
       throw new Error("Search function did not return an array. Probably an error were returned");
     }
+
     if (res.length === 0) {
       throw new Error("Nada users");
     }
+
     if (showPreview) {
       previewData = mapPreviewMapper(previewMapper(res)); // Hahahah
     }
+
     callback(res);
   } catch (error) {
     isSearching = false;
-    const errStr = String(error);
+    const errStr: string = String(error);
     console.log(errStr);
-    const status = (error as { response?: { status?: number } })?.response?.status;
-    if (errStr === "Error: Nada users")
+
+    const status: number | undefined = (error as { response?: { status?: number } })?.response?.status;
+
+    if (errStr === "Error: Nada users") {
       searchError = `Ingen resultat funnet ved søk på "${searchValue}"... DET ER BJØRN RIIS SIN SKYLD!! 😬`;
-    else if (status === 404) searchError = "Bruker ikke funnet... 😬";
-    else if (status === 401) searchError = "Du har ikke lov å søke på det 🚫";
-    else searchError = "En feil har oppstått - vennligst prøv igjen";
+    } else if (status === 404) {
+      searchError = "Bruker ikke funnet... 😬";
+    } else if (status === 401) {
+      searchError = "Du har ikke lov å søke på det 🚫";
+    } else {
+      searchError = "En feil har oppstått - vennligst prøv igjen";
+    }
   }
+
   timeout = null;
 };
 
-const debounceSearch = (ms = debounceMs) => {
+const debounceSearch = (ms: number = debounceMs): void => {
   if (showPreview) {
     searchError = null;
     isSearching = true;
@@ -180,15 +226,17 @@ const debounceSearch = (ms = debounceMs) => {
       // If timeout does not exist already
       if (!timeout) {
         timeout = setTimeout(searchFunc, ms);
-      } else {
-        // If timeout already exist - we restart it
-        clearTimeout(timeout);
-        timeout = setTimeout(searchFunc, ms);
+        return;
       }
-    } else {
-      // To small searchstring, we stop the search
-      clear();
+
+      // If timeout already exist - we restart it
+      clearTimeout(timeout);
+      timeout = setTimeout(searchFunc, ms);
+      return;
     }
+
+    // To small searchstring, we stop the search
+    clear();
   }
 };
 </script>
