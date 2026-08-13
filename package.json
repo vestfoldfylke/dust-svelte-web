@@ -23,7 +23,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@azure/msal-browser": "^3.30.0",
+		"@azure/msal-browser": "^5.18.0",
 		"svelte-confetti": "^2.3.2"
 	}
 }

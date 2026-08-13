@@ -11,12 +11,10 @@ const msalConfig: Configuration = {
   auth: {
     clientId: import.meta.env.VITE_CLIENT_ID ?? "klientID",
     authority: import.meta.env.VITE_CLIENT_ISS ?? "autiruireuir",
-    redirectUri: import.meta.env.VITE_REDIRECT_URI ?? "uriSomewhere",
-    navigateToLoginRequestUrl: false // Vi redirecter selv etter succesful login - MSAL klarer det særdeles dårlig...
+    redirectUri: import.meta.env.VITE_REDIRECT_URI ?? "uriSomewhere"
   },
   cache: {
-    cacheLocation: "sessionStorage", // This configures where your cache will be stored
-    storeAuthStateInCookie: false // Set this to "true" if you are having issues on IE11 or Edge
+    cacheLocation: "sessionStorage" // This configures where your cache will be stored
   }
 };
 
@@ -24,7 +22,9 @@ let msalClient: IPublicClientApplication | null = null;
 
 export const getMsalClient = async (): Promise<IPublicClientApplication> => {
   if (!msalClient) {
-    msalClient = await PublicClientApplication.createPublicClientApplication(msalConfig);
+    const created: PublicClientApplication = new PublicClientApplication(msalConfig);
+    await created.initialize();
+    msalClient = created;
   }
 
   const client: IPublicClientApplication = msalClient;
@@ -60,7 +60,7 @@ export const login = async (forceLogin: boolean = false, loginRequestUrl: string
 
   const client: IPublicClientApplication = await getMsalClient();
 
-  const loginResponse: AuthenticationResult | null = await client.handleRedirectPromise();
+  const loginResponse: AuthenticationResult | null = await client.handleRedirectPromise({ navigateToLoginRequestUrl: false });
 
   if (loginResponse && !forceLogin) {
     client.setActiveAccount(loginResponse.account);
