@@ -69,10 +69,10 @@ const keys: string[] = json ? Object.keys(json) : [];
     color: #004ed0;
   }
   button.expandable {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     border: none;
-    border-radius: 0px;
+    border-radius: 0;
     background-color: inherit;
   }
   button.expandable:hover {

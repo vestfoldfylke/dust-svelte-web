@@ -1,4 +1,4 @@
-const padout = (n: number): string => (n < 10 ? `0${n}` : `${n}`);
+const padOut = (n: number): string => (n < 10 ? `0${n}` : `${n}`);
 
 const easter = (year: number): Date => {
   const C: number = Math.floor(year / 100);
@@ -13,10 +13,10 @@ const easter = (year: number): Date => {
   const M: number = 3 + Math.floor((L + 40) / 44);
   const D: number = L + 28 - 31 * Math.floor(M / 4);
 
-  return new Date(`${padout(M)}.${padout(D)}.${year}`);
+  return new Date(`${padOut(M)}.${padOut(D)}.${year}`);
 };
 
-// Check if we are in the easter period (14 days before easter, or 4 days after easter)
+// Check if we are in the easter period (14 days before Easter, or 4 days after Easter)
 export const isEaster = (): boolean => {
   const easterDate: Date = easter(new Date().getFullYear());
   const easterBeginning: Date = new Date(easterDate);

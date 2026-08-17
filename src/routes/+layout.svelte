@@ -1,5 +1,5 @@
 <script lang="ts">
-import "../app.css"; // Add global css (and make it hot reload)
+import "../app.css"; // Add global CSS (and make it hot reload)
 import { onMount } from "svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
@@ -7,11 +7,11 @@ import type { IPublicClientApplication } from "@azure/msal-browser";
 import christmasDust from "$lib/assets/christmas-dust.png";
 import easterDust from "$lib/assets/easter-dust.png";
 import logo from "$lib/assets/vfk_logo.png";
+import { getMsalClient, login, logout } from "$lib/auth/msal-auth";
+import DusteSearchBar from "$lib/components/DusteSearchBar.svelte";
+import IconSpinner from "$lib/components/Icons/IconSpinner.svelte";
+import { isChristmas, isEaster } from "$lib/helpers/holidays";
 import type { LoginResponse } from "$lib/types/auth";
-import { getMsalClient, login, logout } from "../lib/auth/msal-auth.js";
-import DusteSearchBar from "../lib/components/DusteSearchBar.svelte";
-import IconSpinner from "../lib/components/Icons/IconSpinner.svelte";
-import { isChristmas, isEaster } from "../lib/helpers/holidays.js";
 
 type Account = {
   name?: string;
@@ -111,7 +111,7 @@ onMount((): (() => void) => {
   .topbar {
     width: 100%;
     background-color: var(--himmel-10);
-    padding: 20px 0px;
+    padding: 20px 0;
   }
   .toptop {
     width: 100%;
@@ -141,7 +141,7 @@ onMount((): (() => void) => {
   @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .topbar {
-      padding: 5px 0px;
+      padding: 5px 0;
     }
     .toptop {
       padding: 5px;

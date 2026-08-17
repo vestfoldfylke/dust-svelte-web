@@ -1,25 +1,9 @@
 <script lang="ts">
+import type { SystemWithTestsResult, TestCaseResult } from "$lib/types/search";
 import HighlightJson from "./HighlightJson.svelte";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 import SystemStatusCircle from "./SystemStatusCircle.svelte";
 import Test from "./Test.svelte";
-
-type SystemTest = {
-  title: string;
-  result?: {
-    status?: string | null;
-  };
-};
-
-type SystemType = {
-  name: string;
-  tests: SystemTest[];
-  finishedTimestamp?: string | null;
-  data?: {
-    getDataFailed?: boolean;
-    customMessage?: string;
-  } & Record<string, unknown>;
-};
 
 type SystemStatusResult = {
   systemStatus: string;
@@ -27,7 +11,7 @@ type SystemStatusResult = {
   errors: number;
 };
 
-export let system: SystemType;
+export let system: SystemWithTestsResult;
 
 let systemStatus: string = "loading";
 let warnings: number = 0;
@@ -35,14 +19,14 @@ let errors: number = 0;
 let collapsed: boolean = true;
 let dataModal: HTMLDialogElement;
 
-const getSystemStatus = (tests: SystemTest[], getSystemDataFailed: boolean | undefined): SystemStatusResult => {
-  if (getSystemDataFailed) {
+const getSystemStatus = (tests: TestCaseResult[], data: SystemWithTestsResult["data"]): SystemStatusResult => {
+  if (data && "getDataFailed" in data && data.getDataFailed) {
     return { systemStatus: "dead", warnings: 0, errors: 0 };
   }
 
-  const running: number = tests.filter((test: SystemTest): boolean => !test.result).length;
-  const warningCount: number = tests.filter((test: SystemTest): boolean => test.result?.status === "warning").length;
-  const errorCount: number = tests.filter((test: SystemTest): boolean => test.result?.status === "error").length;
+  const running: number = tests.filter((test: TestCaseResult): boolean => !test.result).length;
+  const warningCount: number = tests.filter((test: TestCaseResult): boolean => test.result?.status === "warning").length;
+  const errorCount: number = tests.filter((test: TestCaseResult): boolean => test.result?.status === "error").length;
 
   let status: string;
   if (running > 0) {
@@ -59,7 +43,7 @@ const getSystemStatus = (tests: SystemTest[], getSystemDataFailed: boolean | und
 };
 
 $: {
-  const status: SystemStatusResult = getSystemStatus(system.tests || [], system.data?.getDataFailed);
+  const status: SystemStatusResult = getSystemStatus(system.tests || [], system.data);
   systemStatus = status.systemStatus;
   warnings = status.warnings;
   errors = status.errors;
@@ -118,7 +102,7 @@ $: {
 
 <style>
     .system.open {
-        margin: 10px 0px;
+        margin: 10px 0;
     }
     .systemHeader:hover {
         cursor: pointer;
@@ -156,7 +140,7 @@ $: {
         border-bottom: 1px solid #c3c3c3;
     }
     .systemFooter {
-        padding: 15px 0px;
+        padding: 15px 0;
         display: flex;
         justify-content: right;
     }
@@ -167,9 +151,9 @@ $: {
         margin-bottom: 16px;
     }
     .rawData {
-        padding: 0px 8px;
+        padding: 0 8px;
         font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
         font-size: 14px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.03rem;
     }
 </style>

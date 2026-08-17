@@ -1,17 +1,7 @@
 <script lang="ts">
 import Confetti from "svelte-confetti";
+import type { ReportUser } from "$lib/types/search";
 import InitialsBadge from "./InitialsBadge.svelte";
-
-type ReportUser = {
-  displayName: string;
-  userPrincipalName?: string;
-  samAccountName?: string;
-  feidenavn?: string;
-  companyName?: string;
-  jobTitle?: string;
-  employeeNumber?: string;
-  extraCaution?: boolean;
-};
 
 export let user: ReportUser;
 
@@ -64,7 +54,7 @@ const numberOfConfetti = (reportUser: ReportUser): number => {
                 <Confetti iterationCount={10} amount={numberOfConfetti(user)} duration={2500} delay={[0, 1000]} x={[0,4]} />
             {/if}
 
-            <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samaccount ? feidenavn??')}</p>
+            <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samAccountName ? feidenavn??')}</p>
             <p>{user.companyName}</p>
             <p>{user.jobTitle}</p>
         </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { ReportUser } from "$lib/types/search";
 import { clickOutside } from "../helpers/click-outside.js";
 import IconClose from "./Icons/IconClear.svelte";
 import IconSearch from "./Icons/IconSearch.svelte";
@@ -41,34 +42,13 @@ export let showSearch: boolean = true;
 
 export let showSelected: boolean = false;
 
-export let search: (query: string) => Promise<SearchInput[]> = async (_query: string): Promise<SearchInput[]> => {
-  return [
-    { fyrste: "hei på deg", andre: "oh oh" },
-    { fyrste: "tut tut" },
-    { fyrste: "tut tut" },
-    { fyrste: "tut tut" },
-    { fyrste: "tut tut" },
-    { fyrste: "tut tut" },
-    { fyrste: "tut tut" }
-  ];
-};
+export let search: (query: string) => Promise<ReportUser[]>;
 
 export let callback: (searchRes: SearchInput[]) => void = (_searchRes: SearchInput[]): void => {
   // console.log('callback')
 };
 
-export let previewMapper: (input: SearchInput[]) => PreviewItem[] = (input: SearchInput[]): PreviewItem[] => {
-  return input.map((ele: SearchInput): PreviewItem => {
-    return {
-      first: ele.fyrste ?? null,
-      second: ele.andre ?? null,
-      third: ele.nested?.tredje ?? null,
-      onClick: (): void => {
-        console.log(`jeg trykket på ${ele.fyrste}`);
-      }
-    };
-  });
-};
+export let previewMapper: (input: ReportUser[]) => PreviewItem[];
 
 // state
 let focusing: boolean = false;
@@ -180,7 +160,7 @@ const onKeydown = (e: KeyboardEvent): void => {
 
 const searchFunc = async (): Promise<void> => {
   try {
-    const res: SearchInput[] = await search(searchValue);
+    const res: ReportUser[] = await search(searchValue);
     isSearching = false;
 
     if (!Array.isArray(res)) {
@@ -312,7 +292,7 @@ const debounceSearch = (ms: number = debounceMs): void => {
       border-radius: 24px;
   }
   .searchBar.rounded.focused {
-      border-radius: 24px 24px 0px 0px;
+      border-radius: 24px 24px 0 0;
   }
   .iconGroup {
       display: flex;
@@ -346,8 +326,8 @@ const debounceSearch = (ms: number = debounceMs): void => {
       border-radius: 0 0 24px 24px;
       padding-bottom: 20px;
       /* max-height: 300px; */
-      box-shadow: 0 0 0 4px #aedcea;
-      box-shadow: 0px 13px 10px 0px rgba(0, 0, 0, 0.3);
+      /*box-shadow: 0 0 0 4px #aedcea;*/
+      box-shadow: 0 13px 10px 0 rgba(0, 0, 0, 0.3);
       /* overflow-y: auto; */
   }
   .previewItem {

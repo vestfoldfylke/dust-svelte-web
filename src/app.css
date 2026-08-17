@@ -108,7 +108,7 @@ button.link {
 button.link span {
   font-size: 18px;
   padding: 0px 5px;
-  vertical-align: middle !important;
+  vertical-align: middle;
 }
 
 button.link:hover {

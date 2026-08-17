@@ -3,33 +3,11 @@ import { onMount } from "svelte";
 import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
 import { page } from "$app/stores";
 import type { ApiResponse } from "$lib/types/api";
+import type { Report, SystemWithTestsResult } from "$lib/types/search";
 import { getReport } from "$lib/useApi.js";
 import IconSpinner from "../../../lib/components/Icons/IconSpinner.svelte";
 import PersonCard from "../../../lib/components/PersonCard.svelte";
 import System from "../../../lib/components/System.svelte";
-
-type ReportSystem = {
-  name: string;
-  runtime: number;
-  tests: {
-    title: string;
-    result?: {
-      status?: string | null;
-    };
-  }[];
-  finishedTimestamp?: string | null;
-  data?: {
-    getDataFailed?: boolean;
-    customMessage?: string;
-  } & Record<string, unknown>;
-};
-
-type ReportData = {
-  user: Record<string, unknown> & { displayName: string };
-  systems?: ReportSystem[];
-  runtimeAlert?: boolean;
-  totalRuntime?: number;
-};
 
 type OverLimitSystem = {
   name: string;
@@ -37,7 +15,7 @@ type OverLimitSystem = {
   runtime: number;
 };
 
-let reportData: ReportData | undefined;
+let reportData: Report | string | undefined;
 let statusCode: number | undefined;
 let interval: ReturnType<typeof setInterval> | undefined;
 let intervals: ReturnType<typeof setInterval>[] = [];
@@ -67,18 +45,24 @@ onMount((): void => {
   goto(`/report/${$page.params.reportId}`, { replaceState: false });
 });
 
-// Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
+// Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, der av onMount over
 afterNavigate((): void => {
   // reset timer
   startTime = new Date();
+
   const fetchReportData = async (): Promise<void> => {
     const reportId: string | undefined = $page.params.reportId;
     if (!reportId) {
       return;
     }
 
-    const response: ApiResponse = await getReport(reportId);
-    reportData = response.data as ReportData;
+    const response: ApiResponse<Report | string | undefined> = await getReport(reportId);
+    if (response.status >= 200 && response.status < 300) {
+      reportData = response.data as Report;
+    } else {
+      reportData = response.data as string | undefined;
+    }
+
     statusCode = response.status;
 
     if (response.status === 200 || response.status === 500) {
@@ -102,16 +86,16 @@ beforeNavigate((): void => {
   }
 });
 
-const getSystemsWithLongRuntime = (report: ReportData): OverLimitSystem[] => {
+const getSystemsWithLongRuntime = (report: Report): OverLimitSystem[] => {
   return (report.systems ?? [])
-    .filter((s: ReportSystem): boolean => s.runtime > alertRuntimeMs)
-    .map((s: ReportSystem): OverLimitSystem => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }));
+    .filter((system: SystemWithTestsResult): boolean => system.runtime !== undefined && system.runtime !== null && system.runtime > alertRuntimeMs)
+    .map((system: SystemWithTestsResult): OverLimitSystem => ({ name: system.name, loweredName: system.name.toLowerCase(), runtime: system.runtime as number }));
 };
 </script>
 
 {#if !reportData}
   Henter data
-{:else if statusCode === 500}
+{:else if statusCode === 500 || typeof reportData === "string"}
     <div class="runtimeAlert">
         Noe gikk galt ved henting av rapporten <b>{$page.params.reportId}</b>. Prøv en annen rapport eller kontakt en voksen
     </div>
@@ -127,7 +111,7 @@ const getSystemsWithLongRuntime = (report: ReportData): OverLimitSystem[] => {
       {#if reportData.runtimeAlert}
         {@const overLimitSystems = getSystemsWithLongRuntime(reportData)}
         <div class="runtimeAlert">
-            Aiaiai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige, saken vil bli sett på. Beklager ventetiden.<br />
+            Ai ai ai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige, saken vil bli sett på. Beklager ventetiden.<br />
             {#each overLimitSystems as system, i}
                 {#if i > 0}
                     <br />

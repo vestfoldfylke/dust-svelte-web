@@ -1,21 +1,10 @@
 <script lang="ts">
+import type { TestCaseResult } from "$lib/types/search";
 import HighlightJson from "./HighlightJson.svelte";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 import TestStatusCircle from "./TestStatusCircle.svelte";
 
-type TestResult = {
-  status?: string | null;
-  message?: string;
-  solution?: string;
-  raw?: unknown;
-};
-
-type TestType = {
-  title: string;
-  result?: TestResult;
-};
-
-export let test: TestType;
+export let test: TestCaseResult;
 
 let dataModal: HTMLDialogElement;
 let solutionModal: HTMLDialogElement;
@@ -103,9 +92,9 @@ const norwegianStatus = (status: string | null | undefined): string => {
         margin-bottom: 16px;
     }
     .rawData {
-        padding: 0px 8px;
+        padding: 0 8px;
         font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
         font-size: 14px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.03rem;
     }
 </style>

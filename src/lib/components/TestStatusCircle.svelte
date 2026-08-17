@@ -1,13 +1,8 @@
 <script lang="ts">
+import type { TestCaseResult } from "$lib/types/search";
 import IconSpinner from "./Icons/IconSpinner.svelte";
 
-type TestProp = {
-  result?: {
-    status?: string | null;
-  };
-};
-
-export let test: TestProp = { result: { status: null } };
+export let test: TestCaseResult
 </script>
 
 <div>
