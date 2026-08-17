@@ -227,27 +227,27 @@ const debounceSearch = (ms: number = debounceMs): void => {
       {#if showClear || showSearch}
           <div class="iconGroup">
               {#if showClear}
-                  <div class='icon' on:click={clearSearch}>
+                  <button type="button" class="icon" title="Nullstill søk" on:click={clearSearch}>
                       <IconClose />
-                  </div>
+                  </button>
               {/if}
               {#if showSearch}
-                  <div class='icon' on:click={() => debounceSearch(0)}>
+                  <button type="button" class="icon" title="Søk" on:click={() => debounceSearch(0)}>
                       <IconSearch />
-                  </div>
+                  </button>
               {/if}
           </div>
       {/if}
   </div>
   {#if focusing && showPreview && (previewData.length > 0 || isSearching || searchError)}
-      <div class="previewContainer">
+      <div class="previewContainer" role="listbox">
       {#if isSearching}
           <div class="previewItem searching"><IconSpinner width="1rem" />&nbsp;&nbsp;Søker...</div>
       {:else if searchError}
           <div class="previewItem error">{searchError}</div>
       {:else}
           {#each previewData as pv}
-            <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" on:click={pv.onClick}>
+            <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" role="option" tabindex="-1" aria-selected={pv.active === true} on:click={pv.onClick} on:keydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pv.onClick(); } }}>
                 <div class="previewItemProp">
                     {#if pv.firstImage}
                         <img src={pv.firstImage} width="18px" alt="hahah" />
@@ -303,6 +303,10 @@ const debounceSearch = (ms: number = debounceMs): void => {
       width: 18px;
       cursor: pointer;
       display: flex;
+      padding: 0;
+      background: none;
+      border: none;
+      color: inherit;
   }
   .icon:hover {
       transform: scale(1.1);

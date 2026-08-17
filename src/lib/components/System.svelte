@@ -51,7 +51,7 @@ $: {
 </script>
 
 <div class="system{!collapsed ? ' open' : ''}">
-    <div class="systemHeader{!collapsed ? ' open' : ''}" on:click={() => { collapsed = !collapsed }}>
+    <div class="systemHeader{!collapsed ? ' open' : ''}" role="button" tabindex="0" aria-expanded={!collapsed} on:click={() => { collapsed = !collapsed }} on:keydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); collapsed = !collapsed; } }}>
         {#if !system.finishedTimestamp}
             <IconSpinner width="32px" />
         {:else}
