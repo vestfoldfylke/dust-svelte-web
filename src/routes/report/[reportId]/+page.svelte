@@ -1,93 +1,101 @@
-<script>
-  import { page } from '$app/stores'
-  import { getReport } from '$lib/useApi'
-  import { afterNavigate, beforeNavigate, goto } from '$app/navigation'
-  import System from '../../../lib/components/System.svelte';
-  import IconSpinner from '../../../lib/components/Icons/IconSpinner.svelte';
-  import PersonCard from '../../../lib/components/PersonCard.svelte';
-  import { onMount } from 'svelte';
+<script lang="ts">
+import { onMount } from "svelte";
+import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
+import { page } from "$app/stores";
+import type { ApiResponse } from "$lib/types/api";
+import type { Report, SystemWithTestsResult } from "$lib/types/search";
+import { getReport } from "$lib/useApi.js";
+import IconSpinner from "../../../lib/components/Icons/IconSpinner.svelte";
+import PersonCard from "../../../lib/components/PersonCard.svelte";
+import System from "../../../lib/components/System.svelte";
 
-  let reportData
-  let statusCode
-  let interval
-  let intervals = []
+type OverLimitSystem = {
+  name: string;
+  loweredName: string;
+  runtime: number;
+};
 
-  const retryAfter = 2000
-  
-  const alertRuntimeMs = import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000
+let reportData: Report | string | undefined;
+let statusCode: number | undefined;
+let interval: ReturnType<typeof setInterval> | undefined;
+let intervals: ReturnType<typeof setInterval>[] = [];
 
-  // Runtime stuff
-  let startTime = new Date()
-  let time = new Date()
+const retryAfter: number = 2000;
 
-  onMount(() => {
-		const timeInterval = setInterval(() => {
-			time = new Date()
-		}, 100)
+const alertRuntimeMs: number = Number(import.meta.env.VITE_ALERT_RUNTIME_MS ?? 30000);
 
-		return () => {
-			clearInterval(timeInterval)
-		}
-	})
+// Runtime stuff
+let startTime: Date = new Date();
+let time: Date = new Date();
 
-  $: runtime = time - startTime
+onMount((): (() => void) => {
+  const timeInterval: ReturnType<typeof setInterval> = setInterval((): void => {
+    time = new Date();
+  }, 100);
 
-  // Quick fix - just navigate to the same page to get afterNavigate to run
-  onMount(() => {
-    goto(`/report/${$page.params.reportId}`, {  replaceState: false })
-  })
+  return (): void => {
+    clearInterval(timeInterval);
+  };
+});
 
-  // Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, derav onMount over
-  afterNavigate(() => {
-    // reset timer
-    startTime = new Date()
-    const fetchReportData = async () => {
-      const { status, data } = await getReport($page.params.reportId)
-      reportData = data
-      statusCode = status
-      if (status === 200) {
-        // console.log('Status 200 da stopper vi interval')
-        clearInterval(interval)
-        for (const inter of intervals) {
-          clearInterval(inter)
-        }
-      } else if (status === 202) {
-        // console.log('Status 202, da fortsetter vi interval')
-      } else if (status === 500) {
-        // console.log('Status 500, da stopper vi interval')
-        clearInterval(interval)
-        for (const inter of intervals) {
-          clearInterval(inter)
-        }
-      } else {
-        // console.log('status noe annet, what??')
+$: runtime = time.getTime() - startTime.getTime();
+
+// Quick fix - just navigate to the same page to get afterNavigate to run
+onMount((): void => {
+  goto(`/report/${$page.params.reportId}`, { replaceState: false });
+});
+
+// Kjøres når vi har havna på siden - merk at den kjøres IKKE når man refresher siden, der av onMount over
+afterNavigate((): void => {
+  // reset timer
+  startTime = new Date();
+
+  const fetchReportData = async (): Promise<void> => {
+    const reportId: string | undefined = $page.params.reportId;
+    if (!reportId) {
+      return;
+    }
+
+    const response: ApiResponse<Report | string | undefined> = await getReport(reportId);
+    if (response.status >= 200 && response.status < 300) {
+      reportData = response.data as Report;
+    } else {
+      reportData = response.data as string | undefined;
+    }
+
+    statusCode = response.status;
+
+    if (response.status === 200 || response.status === 500) {
+      clearInterval(interval);
+      for (const inter of intervals) {
+        clearInterval(inter);
       }
     }
-    
-    interval = setInterval(fetchReportData, retryAfter)
-    intervals.push(interval)
-    fetchReportData()
+  };
 
-    return null
-  })
+  interval = setInterval(fetchReportData, retryAfter);
+  intervals.push(interval);
+  fetchReportData();
+});
 
-  // Kjøres før vi navigerer vekk fra siden
-  beforeNavigate(() => {
-    clearInterval(interval) // Fjern kjøring av interval når det navigeres vekk fra sluggen / sida
-    for (const inter of intervals) {
-      clearInterval(inter)
-    }
-    // console.log('Navigated nå')
-  })
-  
-  function getSystemsWithLongRuntime(report) {
-    return report.systems.filter(s => s.runtime > alertRuntimeMs).map(s => ({ name: s.name, loweredName: s.name.toLowerCase(), runtime: s.runtime }))
+// Kjøres før vi navigerer vekk fra siden
+beforeNavigate((): void => {
+  clearInterval(interval); // Fjern kjøring av interval når det navigeres vekk fra sluggen / sida
+  for (const inter of intervals) {
+    clearInterval(inter);
   }
+});
+
+const getSystemsWithLongRuntime = (report: Report): OverLimitSystem[] => {
+  return (report.systems ?? [])
+    .filter((system: SystemWithTestsResult): boolean => system.runtime !== undefined && system.runtime !== null && system.runtime > alertRuntimeMs)
+    .map((system: SystemWithTestsResult): OverLimitSystem => ({ name: system.name, loweredName: system.name.toLowerCase(), runtime: system.runtime as number }));
+};
 </script>
 
 {#if !reportData}
   Henter data
-{:else if statusCode === 500}
+{:else if statusCode === 500 || typeof reportData === "string"}
     <div class="runtimeAlert">
         Noe gikk galt ved henting av rapporten <b>{$page.params.reportId}</b>. Prøv en annen rapport eller kontakt en voksen
     </div>
@@ -103,7 +111,7 @@
       {#if reportData.runtimeAlert}
         {@const overLimitSystems = getSystemsWithLongRuntime(reportData)}
         <div class="runtimeAlert">
-            Aiaiai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige, saken vil bli sett på. Beklager ventetiden.<br />
+            Ai ai ai 😩 Dette søket tok lang tid, et varsel er sent til systemansvarlige, saken vil bli sett på. Beklager ventetiden.<br />
             {#each overLimitSystems as system, i}
                 {#if i > 0}
                     <br />
