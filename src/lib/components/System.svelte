@@ -1,52 +1,57 @@
-<script>
-    import IconSpinner from "./Icons/IconSpinner.svelte";
-    import SystemStatusCircle from "./SystemStatusCircle.svelte";
-    import Test from "./Test.svelte";
-    import HighlightJson from "./HighlightJson.svelte"
+<script lang="ts">
+import type { SystemWithTestsResult, TestCaseResult } from "$lib/types/search";
+import HighlightJson from "./HighlightJson.svelte";
+import IconSpinner from "./Icons/IconSpinner.svelte";
+import SystemStatusCircle from "./SystemStatusCircle.svelte";
+import Test from "./Test.svelte";
 
-    export let system
-    let systemStatus = "loading"
-    let warnings = 0
-    let errors = 0
+type SystemStatusResult = {
+  systemStatus: string;
+  warnings: number;
+  errors: number;
+};
 
-    let collapsed = true
-    let dataModal
+export let system: SystemWithTestsResult;
 
-    const getSystemStatus = (tests, getSystemDataFailed) => {
-        if (getSystemDataFailed) {
-            return { systemStatus: "dead", warnings: 0, errors: 0 }
-        }
-        const running = tests.filter(test => !test.result).length
-        const warnings = tests.filter(test => test.result?.status === "warning").length
-        const errors = tests.filter(test => test.result?.status === "error").length
-        if (running > 0) {
-            systemStatus = "loading"
-        }
-        else if (errors > 0) {
-            systemStatus = "error"
-        }
-        else if (warnings > 0) {
-            systemStatus = "warn"
-        } else (
-            systemStatus = "ok"
-        )
-        return  { systemStatus, warnings, errors }
-    }
-    $: {
-        let status = getSystemStatus(system.tests || [], system.data?.getDataFailed)
-        systemStatus = status.systemStatus
-        warnings = status.warnings
-        errors = status.errors
-    }
-    /*
-    $: {
-        collapsed = system.finishedTimestamp && systemStatus === "ok"
-    }
-    */
+let systemStatus: string = "loading";
+let warnings: number = 0;
+let errors: number = 0;
+let collapsed: boolean = true;
+let dataModal: HTMLDialogElement;
+
+const getSystemStatus = (tests: TestCaseResult[], data: SystemWithTestsResult["data"]): SystemStatusResult => {
+  if (data && "getDataFailed" in data && data.getDataFailed) {
+    return { systemStatus: "dead", warnings: 0, errors: 0 };
+  }
+
+  const running: number = tests.filter((test: TestCaseResult): boolean => !test.result).length;
+  const warningCount: number = tests.filter((test: TestCaseResult): boolean => test.result?.status === "warning").length;
+  const errorCount: number = tests.filter((test: TestCaseResult): boolean => test.result?.status === "error").length;
+
+  let status: string;
+  if (running > 0) {
+    status = "loading";
+  } else if (errorCount > 0) {
+    status = "error";
+  } else if (warningCount > 0) {
+    status = "warn";
+  } else {
+    status = "ok";
+  }
+
+  return { systemStatus: status, warnings: warningCount, errors: errorCount };
+};
+
+$: {
+  const status: SystemStatusResult = getSystemStatus(system.tests || [], system.data);
+  systemStatus = status.systemStatus;
+  warnings = status.warnings;
+  errors = status.errors;
+}
 </script>
 
 <div class="system{!collapsed ? ' open' : ''}">
-    <div class="systemHeader{!collapsed ? ' open' : ''}" on:click={() => { collapsed = !collapsed }}>
+    <div class="systemHeader{!collapsed ? ' open' : ''}" role="button" tabindex="0" aria-expanded={!collapsed} on:click={() => { collapsed = !collapsed }} on:keydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); collapsed = !collapsed; } }}>
         {#if !system.finishedTimestamp}
             <IconSpinner width="32px" />
         {:else}
@@ -83,7 +88,7 @@
                             <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
                         </div>
                         <div class="rawData">
-                            <HighlightJson json={system.data} />
+                            <HighlightJson json={(system.data ?? null) as Record<string, unknown> | null} />
                         </div>
                     </form>
                 </dialog>
@@ -97,7 +102,7 @@
 
 <style>
     .system.open {
-        margin: 10px 0px;
+        margin: 10px 0;
     }
     .systemHeader:hover {
         cursor: pointer;
@@ -135,7 +140,7 @@
         border-bottom: 1px solid #c3c3c3;
     }
     .systemFooter {
-        padding: 15px 0px;
+        padding: 15px 0;
         display: flex;
         justify-content: right;
     }
@@ -146,9 +151,9 @@
         margin-bottom: 16px;
     }
     .rawData {
-        padding: 0px 8px;
+        padding: 0 8px;
         font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
         font-size: 14px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.03rem;
     }
 </style>

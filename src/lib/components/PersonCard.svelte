@@ -1,38 +1,37 @@
-<script>
-    import Confetti from 'svelte-confetti';
+<script lang="ts">
+import Confetti from "svelte-confetti";
+import type { ReportUser } from "$lib/types/search";
+import InitialsBadge from "./InitialsBadge.svelte";
 
-    import InitialsBadge from "./InitialsBadge.svelte";
+export let user: ReportUser;
 
-    export let user
+const hasBirthdayToday = (reportUser: ReportUser): boolean => {
+  const date: number = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? "0");
+  const month: number = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? "-1");
+  const today: Date = new Date();
 
-    const getInitialsFromName = (reportUser) => {
-        if (hasBirthdayToday(reportUser)) {
-          return '🥳'
-        }
+  return date === today.getDate() && month === today.getMonth() + 1;
+};
 
-        const lastSpaceIndex = reportUser.displayName.lastIndexOf(' ')
-        return `${reportUser.displayName.substring(0,1)} ${reportUser.displayName.substring(lastSpaceIndex+1, lastSpaceIndex+2)}`
-    }
+const getInitialsFromName = (reportUser: ReportUser): string => {
+  if (hasBirthdayToday(reportUser)) {
+    return "🥳";
+  }
 
-    const hasBirthdayToday = (reportUser) => {
-      const date = Number.parseInt(reportUser.employeeNumber?.substring(0, 2) ?? '0')
-      const month = Number.parseInt(reportUser.employeeNumber?.substring(2, 4) ?? '-1')
-      const today = new Date()
+  const lastSpaceIndex: number = reportUser.displayName.lastIndexOf(" ");
 
-      return date === today.getDate() && month === (today.getMonth() + 1)
-    }
+  return `${reportUser.displayName.substring(0, 1)} ${reportUser.displayName.substring(lastSpaceIndex + 1, lastSpaceIndex + 2)}`;
+};
 
-    const numberOfConfetti = (reportUser) => {
-      const userYear = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? `0`)
+const numberOfConfetti = (reportUser: ReportUser): number => {
+  const userYear: number = Number.parseInt(reportUser.employeeNumber?.substring(4, 6) ?? "0");
 
-      const today = new Date()
-      const currentYear = today.getFullYear() % 100 // Get last two digits of current year
+  const today: Date = new Date();
+  const currentYear: number = today.getFullYear() % 100; // Get last two digits of current year
 
-      // If userYear is greater than currentYear, it means the user was born in the previous century
-      return userYear > currentYear
-        ? (100 - userYear) + currentYear
-        : currentYear - userYear
-    }
+  // If userYear is greater than currentYear, it means the user was born in the previous century
+  return userYear > currentYear ? 100 - userYear + currentYear : currentYear - userYear;
+};
 </script>
 
 <div class="personCard">
@@ -52,10 +51,10 @@
             </h3>
 
             {#if hasBirthdayToday(user)}
-                <Confetti iterationCount=10 amount={numberOfConfetti(user)} duration=2500 delay={[0, 1000]} x={[0,4]} />
+                <Confetti iterationCount={10} amount={numberOfConfetti(user)} duration={2500} delay={[0, 1000]} x={[0,4]} />
             {/if}
 
-            <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samaccount ? feidenavn??')}</p>
+            <p>{user.samAccountName || (user.feidenavn ? user.feidenavn.substring(0, user.feidenavn.indexOf('@')) : '??? samAccountName ? feidenavn??')}</p>
             <p>{user.companyName}</p>
             <p>{user.jobTitle}</p>
         </div>

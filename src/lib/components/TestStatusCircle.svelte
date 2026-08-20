@@ -1,17 +1,18 @@
-<script>
-    import IconSpinner from "./Icons/IconSpinner.svelte";
-    
-    export let test = { result: { status: null } }
+<script lang="ts">
+import type { TestCaseResult } from "$lib/types/search";
+import IconSpinner from "./Icons/IconSpinner.svelte";
+
+export let test: TestCaseResult
 </script>
 
 <div>
-    {#if !test.result.status}
+    {#if !test.result?.status}
         <IconSpinner width="20px" />
-    {:else if test.result.status === "ok"}
+    {:else if test.result?.status === "ok"}
         <div class="testStatus ok"></div>
-    {:else if test.result.status === "warning"}
+    {:else if test.result?.status === "warning"}
         <div class="testStatus warn"></div>
-    {:else if test.result.status === "error"}
+    {:else if test.result?.status === "error"}
         <div class="testStatus error"></div>
     {/if}
 </div>
