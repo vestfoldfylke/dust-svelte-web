@@ -1,0 +1,84 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": ["**", "!dist", "!node_modules", "!**/*.svelte", "!**/*.svg"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "expand": "auto",
+    "includes": [
+      "**",
+      "!dist",
+      "!node_modules",
+      "!**/*.svelte",
+      "!**/*.svg",
+      "!!package.json"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "correctness": {
+        "useImportExtensions": {
+          "options": {
+            "forceJsExtensions": true
+          },
+          "level": "error"
+        }
+      }
+    },
+    "includes": ["**", "!dist", "!node_modules", "!**/*.svelte", "!**/*.svg"]
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "lineWidth": 150,
+      "trailingCommas": "none",
+      "semicolons": "always"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.ts", "**/*.js", "!dist", "!node_modules", "!**/*.svg"],
+      "javascript": {
+        "globals": []
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "error"
+          },
+          "suspicious": {
+            "noExplicitAny": "error"
+          },
+          "complexity": {
+            "useLiteralKeys": "off"
+          },
+          "style": {
+            "noUnusedTemplateLiteral": "error",
+            "noUselessElse": "error",
+            "useCollapsedIf": "error",
+            "useConst": "error"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

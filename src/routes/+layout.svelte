@@ -1,46 +1,57 @@
-<script>
-  import '../app.css' // Add global css (and make it hot reload)
-  import logo from '$lib/assets/logo.svg'
-  import christmasDust from '$lib/assets/christmas-dust.png'
-  import easterDust from '$lib/assets/easter-dust.png'
-  import { login, logout, getMsalClient } from '../lib/auth/msal-auth'
-  import DusteSearchBar from '../lib/components/DusteSearchBar.svelte'
-  import { onMount } from 'svelte'
-  import { page } from '$app/stores'
-  import { goto } from '$app/navigation'
-  import IconSpinner from '../lib/components/Icons/IconSpinner.svelte'
-  import { isChristmas, isEaster } from '../lib/helpers/holidays.js';
+<script lang="ts">
+import "../app.css"; // Add global CSS (and make it hot reload)
+import { onMount } from "svelte";
+import { goto } from "$app/navigation";
+import { page } from "$app/stores";
+import type { IPublicClientApplication } from "@azure/msal-browser";
+import christmasDust from "$lib/assets/christmas-dust.png";
+import easterDust from "$lib/assets/easter-dust.png";
+import logo from "$lib/assets/logo.svg";
+import { getMsalClient, login, logout } from "$lib/auth/msal-auth";
+import DusteSearchBar from "$lib/components/DusteSearchBar.svelte";
+import IconSpinner from "$lib/components/Icons/IconSpinner.svelte";
+import { isChristmas, isEaster } from "$lib/helpers/holidays";
+import type { LoginResponse } from "$lib/types/auth";
 
-  let account = null
-  let currentPage = $page.url.pathname
-  console.log('Rett på: ', currentPage)
-  console.log('Fra window: ', window.location.href)
+type Account = {
+  name?: string;
+  username?: string;
+} | null;
 
-  const appTitle = "D.U.S.T"
+let account: Account = null;
+const currentPage: string = $page.url.pathname;
+console.log("Rett på: ", currentPage);
+console.log("Fra window: ", window.location.href);
 
-  onMount(() => {
-    const authenticate = async () => {
-      const msalClient = await getMsalClient()
-      if (msalClient.getActiveAccount()) {
-        account = msalClient.getActiveAccount()
-      }
-      if (!account) {
-        const loginResponse = await login(false, $page.url.pathname) // Sends you to ms auth, and redirects you back here with the msalClient set with active account
-        account = loginResponse.account
-        if ($page.url.pathname !== loginResponse.loginRequestUrl) {
-          goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true })
-        }
-      }
+const appTitle: string = "D.U.S.T";
+
+onMount((): (() => void) => {
+  const authenticate = async (): Promise<void> => {
+    const msalClient: IPublicClientApplication = await getMsalClient();
+    if (msalClient.getActiveAccount()) {
+      account = msalClient.getActiveAccount();
     }
 
-    authenticate()
+    if (!account) {
+      const loginResponse: LoginResponse | undefined = await login(false, $page.url.pathname); // Sends you to ms auth, and redirects you back here with the msalClient set with active account
+      if (!loginResponse) {
+        return;
+      }
 
-    return () => {
-      console.log('Destroyyyy')
-      // on destroy (probs just wipe state)
+      account = loginResponse.account;
+      if ($page.url.pathname !== loginResponse.loginRequestUrl) {
+        goto(loginResponse.loginRequestUrl, { replaceState: false, invalidateAll: true });
+      }
     }
-  })
+  };
 
+  authenticate();
+
+  return (): void => {
+    console.log("Destroyyyy");
+    // on destroy (probs just wipe state)
+  };
+});
 </script>
 
 {#if !account}
@@ -100,7 +111,7 @@
   .topbar {
     width: 100%;
     background-color: var(--himmel-10);
-    padding: 20px 0px;
+    padding: 20px 0;
   }
   .toptop {
     width: 100%;
@@ -130,7 +141,7 @@
   @media only screen and (max-width: 768px) {
     /* For mobile phones: */
     .topbar {
-      padding: 5px 0px;
+      padding: 5px 0;
     }
     .toptop {
       padding: 5px;

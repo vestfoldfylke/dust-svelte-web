@@ -1,19 +1,29 @@
-<script>
-    import HighlightJson from "./HighlightJson.svelte"
-    import IconSpinner from "./Icons/IconSpinner.svelte"
-    import TestStatusCircle from "./TestStatusCircle.svelte"
+<script lang="ts">
+import type { TestCaseResult } from "$lib/types/search";
+import HighlightJson from "./HighlightJson.svelte";
+import IconSpinner from "./Icons/IconSpinner.svelte";
+import TestStatusCircle from "./TestStatusCircle.svelte";
 
-    export let test
-    let dataModal
-    let solutionModal
+export let test: TestCaseResult;
 
-    const norwegianStatus = (status) => {
-        if (status === "ok") return "OK"
-        if (status === "warning") return "Advarsel"
-        if (status === "error") return "Feil"
-        return ""
-    }
+let dataModal: HTMLDialogElement;
+let solutionModal: HTMLDialogElement;
 
+const norwegianStatus = (status: string | null | undefined): string => {
+  if (status === "ok") {
+    return "OK";
+  }
+
+  if (status === "warning") {
+    return "Advarsel";
+  }
+
+  if (status === "error") {
+    return "Feil";
+  }
+
+  return "";
+};
 </script>
 <div class="test">
     <div class="testHeader">
@@ -47,7 +57,7 @@
                             <button class="link" title="Lukk modal"><span class="material-symbols-outlined">close</span>Lukk</button>
                         </div>
                         <div class="rawData">
-                            <HighlightJson json={test.result.raw} />
+                            <HighlightJson json={test.result.raw as Record<string, unknown> | unknown[] | null} />
                         </div>
                         <!--<pre>{JSON.stringify(test.result.raw, null, 2)}</pre>-->
                     </form>
@@ -82,9 +92,9 @@
         margin-bottom: 16px;
     }
     .rawData {
-        padding: 0px 8px;
+        padding: 0 8px;
         font-family: "Monospace", "Monaco", "Menlo", "Consolas", "Droid Sans Mono", "Inconsolata", "Courier New",  monospace;
         font-size: 14px;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.03rem;
     }
 </style>

@@ -1,202 +1,253 @@
-<script>
-  import IconClose from "./Icons/IconClear.svelte";
-  import IconSearch from "./Icons/IconSearch.svelte";
-  import { clickOutside } from "../helpers/click-outside";
-  import IconSpinner from "./Icons/IconSpinner.svelte";
+<script lang="ts">
+import type { ReportUser } from "$lib/types/search";
+import { clickOutside } from "../helpers/click-outside.js";
+import IconClose from "./Icons/IconClear.svelte";
+import IconSearch from "./Icons/IconSearch.svelte";
+import IconSpinner from "./Icons/IconSpinner.svelte";
 
-  // props
-  export let searchValue = ''
-  export let placeholder = 'Søk her'
-  export let rounded = false
-  export let textInputStyle = false
-  export let debounceMs = 1000
-  export let showClear = true
-  export let showPreview = false
-  export let showSearch = true
-  export let showSelected = false
-  export let search = async (query) => {
-      return [{fyrste: "hei på deg", andre: "oh oh"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}, {fyrste: "tut tut"}]
+type SearchInput = Record<string, unknown> & {
+  fyrste?: string;
+  andre?: string;
+  nested?: {
+    tredje?: string
   }
-  export let callback = (searchRes) => {
-      // console.log('callback')
-  }
-  export let previewMapper = (input) => {
-      return input.map((ele) => {
-          return {
-              first: ele.fyrste ?? null,
-              second: ele.andre ?? null,
-              third: ele.nested?.tredje ?? null,
-              onClick: () => {
-                  console.log(`jeg trykket på ${ele.fyrste}`)
-              }
-          }
-      })
-  }
-  
-  // state
-  let focusing
-  let previewData = []
-  let searchError
-  let isSearching = false
-  let timeout = null
+};
 
-  // functions
-  const clear = () => {
-      if (timeout) {
-          clearTimeout(timeout)
-          timeout = null
+type PreviewItem = {
+  first?: string | null;
+  firstImage?: string | null;
+  second?: string | null;
+  third?: string | null;
+  onClick: () => void;
+  active?: boolean;
+  id?: string;
+};
+
+// props
+export let searchValue: string = "";
+
+export let placeholder: string = "Søk her";
+
+export let rounded: boolean = false;
+
+export let textInputStyle: boolean = false;
+
+export let debounceMs: number = 1000;
+
+export let showClear: boolean = true;
+
+export let showPreview: boolean = false;
+
+export let showSearch: boolean = true;
+
+export let showSelected: boolean = false;
+
+export let search: (query: string) => Promise<ReportUser[]>;
+
+export let callback: (searchRes: SearchInput[]) => void = (_searchRes: SearchInput[]): void => {
+  // console.log('callback')
+};
+
+export let previewMapper: (input: ReportUser[]) => PreviewItem[];
+
+// state
+let focusing: boolean = false;
+let previewData: PreviewItem[] = [];
+let searchError: string | null = null;
+let isSearching: boolean = false;
+let timeout: ReturnType<typeof setTimeout> | null = null;
+
+// functions
+const clear = (): void => {
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+
+  isSearching = false;
+  previewData = [];
+  searchError = null;
+};
+
+const clearSearch = (): void => {
+  clear();
+  searchValue = "";
+};
+
+const changeActivePreviewItem = (dir: "up" | "down"): void => {
+  if (previewData.length < 2) {
+    return;
+  }
+
+  const currIndex: number = previewData.findIndex((ele: PreviewItem): boolean => ele.active === true);
+  const current: PreviewItem | undefined = previewData[currIndex];
+  if (!current) {
+    return;
+  }
+
+  if (dir === "up") {
+    const prev: PreviewItem | undefined = previewData[currIndex - 1];
+    if (currIndex > 0 && prev) {
+      current.active = false;
+      prev.active = true;
+    }
+  } else if (dir === "down") {
+    const next: PreviewItem | undefined = previewData[currIndex + 1];
+    if (currIndex < previewData.length - 1 && next) {
+      current.active = false;
+      next.active = true;
+    }
+  }
+};
+
+// LOLs
+const mapPreviewMapper = (mappedPreview: PreviewItem[]): PreviewItem[] => {
+  return mappedPreview.map((item: PreviewItem, i: number): PreviewItem => {
+    return {
+      ...item,
+      active: i === 0,
+      id: `previewItem-${i}`,
+      onClick: (): void => {
+        item.onClick();
+        if (!showSelected) {
+          clearSearch();
+          return;
+        }
+
+        searchValue = item.first ?? "";
+        clear();
       }
-      isSearching = false
-      previewData = []
-      searchError = false
+    };
+  });
+};
+
+const onFocus = (): void => {
+  if (!focusing) {
+    focusing = true;
   }
-  const clearSearch = () => {
-      clear()
-      searchValue = ''
+};
+
+const onBlur = (): void => {
+  if (focusing) {
+    focusing = false;
+  }
+};
+
+const onKeydown = (e: KeyboardEvent): void => {
+  if (focusing && previewData && previewData.length > 0) {
+    if (e.key === "ArrowUp") {
+      changeActivePreviewItem("up");
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
+      changeActivePreviewItem("down");
+      e.preventDefault();
+    } else if (e.key === "Escape") {
+      clear();
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      previewData.find((ele: PreviewItem): boolean => ele.active === true)?.onClick();
+      e.preventDefault();
+    }
   }
 
-  const changeActivePreviewItem = (dir) => {
-      if (previewData.length < 2) return
-      const currIndex = previewData.findIndex(ele => ele.active)
-      if (dir === 'up') {
-          if (currIndex > 0) {
-              previewData[currIndex].active = false
-              previewData[currIndex - 1].active = true
-              // document.getElementById(`previewItem-${currIndex - 1}`).scrollIntoView()
-          }
-      } else if (dir === 'down') {
-          if (currIndex < previewData.length-1) {
-              previewData[currIndex].active = false
-              previewData[currIndex + 1].active = true
-              //document.getElementById(`previewItem-${currIndex + 1}`).scrollIntoView()
-          }
+  if (focusing) {
+    if (e.key === "Escape") {
+      clear();
+      e.preventDefault();
+    }
+  }
+};
+
+const searchFunc = async (): Promise<void> => {
+  try {
+    const res: ReportUser[] = await search(searchValue);
+    isSearching = false;
+
+    if (!Array.isArray(res)) {
+      throw new Error("Search function did not return an array. Probably an error were returned");
+    }
+
+    if (res.length === 0) {
+      throw new Error("Nada users");
+    }
+
+    if (showPreview) {
+      previewData = mapPreviewMapper(previewMapper(res)); // Hahahah
+    }
+
+    callback(res);
+  } catch (error) {
+    isSearching = false;
+    const errStr: string = String(error);
+    console.log(errStr);
+
+    const status: number | undefined = (error as { response?: { status?: number } })?.response?.status;
+
+    if (errStr === "Error: Nada users") {
+      searchError = `Ingen resultat funnet ved søk på "${searchValue}"... DET ER BJØRN RIIS SIN SKYLD!! 😬`;
+    } else if (status === 404) {
+      searchError = "Bruker ikke funnet... 😬";
+    } else if (status === 401) {
+      searchError = "Du har ikke lov å søke på det 🚫";
+    } else {
+      searchError = "En feil har oppstått - vennligst prøv igjen";
+    }
+  }
+
+  timeout = null;
+};
+
+const debounceSearch = (ms: number = debounceMs): void => {
+  if (showPreview) {
+    searchError = null;
+    isSearching = true;
+    // If searchValue is big enough
+    if (typeof searchValue === "string" && searchValue.length > 1) {
+      // If timeout does not exist already
+      if (!timeout) {
+        timeout = setTimeout(searchFunc, ms);
+        return;
       }
-  }
 
-  // LOLs
-  const mapPreviewMapper = (mappedPreview) => {
-      return mappedPreview.map((item, i) => {
-          return {
-              ...item,
-              active: i === 0,
-              id: `previewItem-${i}`,
-              onClick: () => {
-                  item.onClick()
-                  if (!showSelected) clearSearch()
-                  else {
-                      searchValue = item.first
-                      clear()
-                  }
-              }
-          }
-      })
-  }
+      // If timeout already exist - we restart it
+      clearTimeout(timeout);
+      timeout = setTimeout(searchFunc, ms);
+      return;
+    }
 
-  const onFocus = () => {
-      if (!focusing) focusing = true
+    // To small searchstring, we stop the search
+    clear();
   }
-  const onBlur = () => {
-      if (focusing) focusing = false
-  }
-  const onKeydown = (e) => {
-      if (focusing && previewData && previewData.length > 0) {
-          if (e.key === 'ArrowUp') {
-          changeActivePreviewItem('up')
-          e.preventDefault()
-          } else if (e.key === 'ArrowDown') {
-              changeActivePreviewItem('down')
-              e.preventDefault()
-          } else if (e.key === 'Escape') {
-              clear()
-              e.preventDefault()
-          }  else if (e.key === 'Enter') {
-              previewData.find(ele => ele.active).onClick()
-              e.preventDefault()
-          }
-      }
-      if (focusing) {
-          if (e.key === 'Escape') {
-              clear()
-              e.preventDefault()
-          }
-      }
-  }
-
-  const searchFunc = async () => {
-      try {
-          const res = await search(searchValue)
-          isSearching = false
-          if (!Array.isArray(res)) {
-            throw new Error('Search function did not return an array. Probably an error were returned')
-          }
-          if (res.length === 0) {
-            throw new Error('Nada users')
-          }
-          if (showPreview) {
-              previewData = mapPreviewMapper(previewMapper(res)) // Hahahah
-          }
-          callback(res)
-      } catch (error) {
-          isSearching = false
-          console.log(error.toString())
-          if (error.toString() === 'Error: Nada users') searchError = `Ingen resultat funnet ved søk på "${searchValue}"... DET ER BJØRN RIIS SIN SKYLD!! 😬`
-          else if (error.response?.status === 404) searchError = 'Bruker ikke funnet... 😬'
-          else if (error.response?.status === 401) searchError = 'Du har ikke lov å søke på det 🚫'
-          else searchError = "En feil har oppstått - vennligst prøv igjen"
-      }
-      timeout = null
-  }
-
-  const debounceSearch = (ms = debounceMs) => {
-      if (showPreview) {
-          searchError = null
-          isSearching = true
-          // If searchValue is big enough
-          if (typeof searchValue === 'string' && searchValue.length > 1) {
-              // If timeout does not exist already
-              if (!timeout) {
-                  timeout = setTimeout(searchFunc, ms)
-              } else {
-                  // If timeout already exist - we restart it
-                  clearTimeout(timeout)
-                  timeout = setTimeout(searchFunc, ms)
-              }
-          } else {
-              // To small searchstring, we stop the search
-              clear()
-          }
-      }
-  }
-
+};
 </script>
 
-<div class="searchContainer" use:clickOutside on:click_outside={onBlur}>
+<div class="searchContainer" use:clickOutside={onBlur}>
   <div class="searchBar{rounded ? ' rounded' : ''}{textInputStyle ? ' textInput' : ''}{focusing && showPreview && (previewData.length > 0 || isSearching || searchError) ? ' focused' : ''}">
       <input bind:value={searchValue} {placeholder} on:keydown={onKeydown} on:focus={onFocus} on:input={() => debounceSearch()} />
       {#if showClear || showSearch}
           <div class="iconGroup">
               {#if showClear}
-                  <div class='icon' on:click={clearSearch}>
+                  <button type="button" class="icon" title="Nullstill søk" on:click={clearSearch}>
                       <IconClose />
-                  </div>
+                  </button>
               {/if}
               {#if showSearch}
-                  <div class='icon' on:click={() => debounceSearch(0)}>
+                  <button type="button" class="icon" title="Søk" on:click={() => debounceSearch(0)}>
                       <IconSearch />
-                  </div>
+                  </button>
               {/if}
           </div>
       {/if}
   </div>
   {#if focusing && showPreview && (previewData.length > 0 || isSearching || searchError)}
-      <div class="previewContainer">
+      <div class="previewContainer" role="listbox">
       {#if isSearching}
           <div class="previewItem searching"><IconSpinner width="1rem" />&nbsp;&nbsp;Søker...</div>
       {:else if searchError}
           <div class="previewItem error">{searchError}</div>
       {:else}
           {#each previewData as pv}
-            <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" on:click={pv.onClick}>
+            <div id={pv.id} class="previewItem item{ pv.active ? ' active' : ''}" role="option" tabindex="-1" aria-selected={pv.active === true} on:click={pv.onClick} on:keydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pv.onClick(); } }}>
                 <div class="previewItemProp">
                     {#if pv.firstImage}
                         <img src={pv.firstImage} width="18px" alt="hahah" />
@@ -241,7 +292,7 @@
       border-radius: 24px;
   }
   .searchBar.rounded.focused {
-      border-radius: 24px 24px 0px 0px;
+      border-radius: 24px 24px 0 0;
   }
   .iconGroup {
       display: flex;
@@ -252,6 +303,10 @@
       width: 18px;
       cursor: pointer;
       display: flex;
+      padding: 0;
+      background: none;
+      border: none;
+      color: inherit;
   }
   .icon:hover {
       transform: scale(1.1);
@@ -275,8 +330,8 @@
       border-radius: 0 0 24px 24px;
       padding-bottom: 20px;
       /* max-height: 300px; */
-      box-shadow: 0 0 0 4px #aedcea;
-      box-shadow: 0px 13px 10px 0px rgba(0, 0, 0, 0.3);
+      /*box-shadow: 0 0 0 4px #aedcea;*/
+      box-shadow: 0 13px 10px 0 rgba(0, 0, 0, 0.3);
       /* overflow-y: auto; */
   }
   .previewItem {

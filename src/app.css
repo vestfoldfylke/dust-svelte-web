@@ -1,136 +1,137 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
 
 /* COMMON CSS */
 body {
-	margin: 0px;
-	padding: 0px;
-	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
-	height: 100%;
-	font-family: 'Nunito Sans', Lato, 'Trebuchet MS', sans-serif;
-	line-height: 1.4;
+  margin: 0px;
+  padding: 0px;
+  font-family: "Nunito Sans", Lato, "Trebuchet MS", sans-serif;
+  height: 100%;
+  line-height: 1.4;
 }
 
 * {
-	box-sizing: border-box;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	image-rendering: -webkit-optimize-contrast;
-	-webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
-	padding: 0;
-	margin: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  padding: 0;
+  margin: 0;
 }
 
 /* VARIABLES */
 :root {
-/* COLORS */
-	--vann-10: #E5EEEF;
-	--vann-20: #CCDCDF;
-	--vann-30: #B2CBCF;
-	--vann-40: #99BABF;
-	--vann-50: #80A8AF;
-	--vann-60: #6697A0;
-	--vann-70: #4C8690;
-	--vann-80: #337580;
-	--vann-90: #196370;
-	--vann: #005260;
+  /* COLORS */
+  --vann-10: #e5eeef;
+  --vann-20: #ccdcdf;
+  --vann-30: #b2cbcf;
+  --vann-40: #99babf;
+  --vann-50: #80a8af;
+  --vann-60: #6697a0;
+  --vann-70: #4c8690;
+  --vann-80: #337580;
+  --vann-90: #196370;
+  --vann: #005260;
 
-	--himmel-10: #E5F5F9;
-	--himmel-20: #CCEBF3;
-	--himmel-30: #B2E1ED;
-	--himmel-40: #99D7E7;
-	--himmel-50: #80CDE0;
-	--himmel-60: #66C3DA;
-	--himmel-70: #4CB9D4;
-	--himmel-80: #33AFCE;
-	--himmel-90: #19A5C8;
-	--himmel: #005260;
+  --himmel-10: #e5f5f9;
+  --himmel-20: #ccebf3;
+  --himmel-30: #b2e1ed;
+  --himmel-40: #99d7e7;
+  --himmel-50: #80cde0;
+  --himmel-60: #66c3da;
+  --himmel-70: #4cb9d4;
+  --himmel-80: #33afce;
+  --himmel-90: #19a5c8;
+  --himmel: #005260;
 
-	--nype-10: #F8E8EC;
-	--nype-20: #F1D1D8;
-	--nype-30: #E9B9C5;
-	--nype-40: #E2A2B1;
-	--nype-50: #DB8B9E;
-	--nype-60: #D4748B;
-	--nype-70: #CD5D77;
-	--nype-80: #C54564;
-	--nype-90: #BE2E50;
-	--nype: #B7173D;
+  --nype-10: #f8e8ec;
+  --nype-20: #f1d1d8;
+  --nype-30: #e9b9c5;
+  --nype-40: #e2a2b1;
+  --nype-50: #db8b9e;
+  --nype-60: #d4748b;
+  --nype-70: #cd5d77;
+  --nype-80: #c54564;
+  --nype-90: #be2e50;
+  --nype: #b7173d;
 
-	--plomme-10: #EEEAEF;
-	--plomme-20: #DED5DF;
-	--plomme-30: #CDC0D0;
-	--plomme-40: #BDABC0;
-	--plomme-50: #AC96B0;
-	--plomme-60: #9C82A0;
-	--plomme-70: #8B6D90;
-	--plomme-80: #7B5881;
-	--plomme-90: #19A5C8;
-	--plomme: #6A4371;
+  --plomme-10: #eeeaef;
+  --plomme-20: #ded5df;
+  --plomme-30: #cdc0d0;
+  --plomme-40: #bdabc0;
+  --plomme-50: #ac96b0;
+  --plomme-60: #9c82a0;
+  --plomme-70: #8b6d90;
+  --plomme-80: #7b5881;
+  --plomme-90: #19a5c8;
+  --plomme: #6a4371;
 
-	--gress-10: #E9F4EF;
-	--gress-20: #D2EAE0;
-	--gress-30: #BCDFD0;
-	--gress-40: #A5D5C0;
-	--gress-50: #8FCAB0;
-	--gress-60: #79BFA1;
-	--gress-70: #62B591;
-	--gress-80: #4CAA81;
-	--gress-90: #35A072;
-	--gress: #1F9562;
+  --gress-10: #e9f4ef;
+  --gress-20: #d2eae0;
+  --gress-30: #bcdfd0;
+  --gress-40: #a5d5c0;
+  --gress-50: #8fcab0;
+  --gress-60: #79bfa1;
+  --gress-70: #62b591;
+  --gress-80: #4caa81;
+  --gress-90: #35a072;
+  --gress: #1f9562;
 }
 
-
 /* HTML Elements styling */
-input, select, textarea, button {
+input,
+select,
+textarea,
+button {
   font-family: inherit;
   font-size: inherit;
 }
 
 button {
-	padding: 4px;
-	cursor: pointer;
-	background-color: var(--himmel-20);
-	border: 1px solid black;
-	border-radius: 5px;
-} 
+  padding: 4px;
+  cursor: pointer;
+  background-color: var(--himmel-20);
+  border: 1px solid black;
+  border-radius: 5px;
+}
 
 button.link {
-	padding: 0px;
-	background-color: inherit;
-	border: none;
-	text-decoration: underline;
-	color: var(--vann);
+  padding: 0px;
+  background-color: inherit;
+  border: none;
+  text-decoration: underline;
+  color: var(--vann);
 }
 
 button.link span {
-	font-size: 18px;
-	padding: 0px 5px;
-	vertical-align: middle !important;
+  font-size: 18px;
+  padding: 0px 5px;
+  vertical-align: middle;
 }
 
 button.link:hover {
-	color: #000;
+  color: #000;
 }
 
 dialog {
-	width: 80vw;
-	height: 80vh;
-	margin: auto;
-	border: none;
-	padding: 32px
+  width: 80vw;
+  height: 80vh;
+  margin: auto;
+  border: none;
+  padding: 32px;
 }
 dialog::backdrop {
-	background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7));
-	animation: fade-in 1s;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+  animation: fade-in 1s;
 }
 
 @keyframes fade-in {
-	from {
-			opacity: 0;
-	}
-	to {
-			opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

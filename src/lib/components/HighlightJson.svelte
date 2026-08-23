@@ -1,18 +1,26 @@
-<script>
+<script lang="ts">
+export let json: Record<string, unknown> | unknown[] | null = {
+  hei: "tuttut",
+  hade: false,
+  obj: { hallllla: "oi", balla: true, etarray: ["mimimi", { oioio: 23 }] },
+  etArrayHEr: ["Maaaama", "just killed a maaan"],
+  sistemann: "tuitui",
+  jijiji: null
+};
 
-  export let json = { hei: "tuttut", hade: false, obj: { hallllla: "oi", balla: true, etarray: [ 'mimimi', { oioio: 23 } ] }, etArrayHEr: ['Maaaama', 'just killed a maaan'], sistemann: "tuitui", jijiji: null }
-  export let open = true
-  export let level = 1
-  export let isLastKey = true
-  export let rootPropName = ''
+export let open: boolean = true;
 
-  const tab = '&nbsp;&nbsp;'
-  const tabs = tab.repeat(level)
-  const rootTabs = tab.repeat(level - 1)
+export let level: number = 1;
 
-  const tabSpaces = 2
-  const keys = json ? Object.keys(json) : null
+export let isLastKey: boolean = true;
 
+export let rootPropName: string = "";
+
+const tab: string = "&nbsp;&nbsp;";
+const tabs: string = tab.repeat(level);
+const rootTabs: string = tab.repeat(level - 1);
+
+const keys: string[] = json ? Object.keys(json) : [];
 </script>
 
 {#if open}
@@ -20,6 +28,7 @@
     Ingen data
   {:else}
     {@html rootTabs}<button class="expandable" on:click={() => {open = !open}}>{Array.isArray(json) ? `${rootPropName}[` : `${rootPropName}{`}</button>
+
     {#each Object.entries(json) as keyval}
       <span class="line">
         <br>
@@ -37,6 +46,7 @@
         {/if}
       </span>
     {/each}
+
     <br>
     <span class="closing-tag">{@html rootTabs}{Array.isArray(json) ? ']' : '}'}{!isLastKey ? ',' : ''}</span>
   {/if}
@@ -59,10 +69,10 @@
     color: #004ed0;
   }
   button.expandable {
-    padding: 0px;
-    margin: 0px;
+    padding: 0;
+    margin: 0;
     border: none;
-    border-radius: 0px;
+    border-radius: 0;
     background-color: inherit;
   }
   button.expandable:hover {
